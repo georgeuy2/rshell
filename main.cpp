@@ -48,6 +48,42 @@ void Commands::commandP(string& com)
 	  temp = strtok(0, ";");
 	}
 }
+
+int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
+{
+	const char * locOr = strstr(com.c_str(), "||");
+	const char * locAnd = strstr(com.c_str(), "&&");
+	
+	if(locOr < locAnd && locAnd && locOr)
+	{
+		locAnd = 0;
+	}
+	
+	if(locOr != 0)
+	{
+		andCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck);
+		andCheck != 1 ? connectP(locOr + 2, 0, 1) : connectP(locOr + 2, 0, 2);
+	}
+	else if (locAnd != 0)
+	{
+		orCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
+		orCheck != 1 ? connectP(locAnd + 2, 2, 0) : connectP(locAnd + 2, 1, 0);
+	}
+	else
+	{
+		if(orCheck == 2)
+		{
+			return 0;
+		}
+		if(andCheck == 2)
+		{
+			return 0;
+		}
+		// return execforcommand(com);
+	}
+	return 0;	
+}
+
 bool Commands::execforcommand(string& com)
 {
 //	com.compare("exit") == 0 ? exit(0):;	//check if command exits
