@@ -1,7 +1,11 @@
 #include <iostream>
-#include <stdlib.h>
 #include <unistd.h>
-
+#include <stdio.h>
+#include <boost/tokenizer.hpp>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <string.h>
+#include <vector>
 using namespace std;
 
 //Prompt which will print [USERNAME]@[HOSTNAME]$
@@ -19,19 +23,61 @@ void prompt()
 	cout << "$ ";
 }
 
-int main()
+class Commands{
+	public:
+	  Commands(){};
+	  void commandP(string& com);	//for parsing command	
+	  bool execforcommand(string& com); //for execute commmand
+	  int connectP(string com, int andCheck, int orCheck); // for parsing connectors
+};
+
+void Commands::commandP(string& com)
+{
+	int hashfound = com.find("#");		// for comments
+
+	char * temp;
+	hashfound > -1 ? com.erase(hashfound): temp = strtok(&com[0], ";");
+	while(temp)
+	{
+	  string temptemp(temp);
+	  if(temptemp.find("exit") != string::npos)
+	  {
+		 exit(0);
+	  }
+	 // connectP(temptemp, 0, 0);
+	  temp = strtok(0, ";");
+	}
+}
+bool Commands::execforcommand(string& com)
+{
+//	com.compare("exit") == 0 ? exit(0):;	//check if command exits
+}
+
+void handle_SIGINT(int signal)
+{
+
+}
+
+int main(int argc, char * argv[])
 {
 	string line;
-	
+
+	Commands * c = new Commands();	
 	while(1)
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
+	  if(signal(SIGINT, handle_SIGINT) == SIG_ERR)
+	  {
+		perror("Error in signal");
+	  }
 	  getline(cin, line);	
-	  
+
 	  if(line == "exit")	//EXIT program if user types "exit"
 	    {
 	      exit(0);
 	    }
+	    c->commandP(line);
 	 }	
+	return 0;
 }
 
