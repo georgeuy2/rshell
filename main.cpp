@@ -29,13 +29,15 @@ class Commands{
 	  void commandP(string& com);	//for parsing command	
 	  bool execforcommand(string& com); //for execute commmand
 	  int connectP(string com, int andCheck, int orCheck); // for parsing connectors
+	  void getarg (string& com, char* arrayargs[]);
+	  static void sigHandle(int signal){}
 };
 
 void Commands::commandP(string& com)
 {
 	int hashfound = com.find("#");		// for comments
-
 	char * temp;
+
 	hashfound > -1 ? com.erase(hashfound): temp = strtok(&com[0], ";");
 	while(temp)
 	{
@@ -44,7 +46,7 @@ void Commands::commandP(string& com)
 	  {
 		 exit(0);
 	  }
-	 // connectP(temptemp, 0, 0);
+	  connectP(temptemp, 0, 0);
 	  temp = strtok(0, ";");
 	}
 }
@@ -79,7 +81,7 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 		{
 			return 0;
 		}
-		// return execforcommand(com);
+		return execforcommand(com);
 	}
 	return 0;	
 }
@@ -92,7 +94,6 @@ bool Commands::execforcommand(string& com)
 	}
 	
 	int location = com.find("cd");
-
 	if(location > -1)
 	{
 		string cdir;
@@ -112,7 +113,14 @@ bool Commands::execforcommand(string& com)
 		{
 			char * directory = getenv("HOME");
 			homebase = "";
-			directory == NULL ? perror("Error in getenv()") : homebase = homebase + directory;
+			if(directory == NULL)
+			{
+			 perror("Error in getenv()");
+			}
+			else
+			{
+			 homebase = homebase + directory;
+			}
 			char * check = (getcwd(path, 2057));
 
 			if(check != '\0')
@@ -148,7 +156,7 @@ bool Commands::execforcommand(string& com)
 			{
 				perror("Error in getenv()");
 			}
-			if(check != '\0');
+			if(check != '\0')
 			{
 				int checkcheck = setenv("OLDPWD", path, 1);
 			
@@ -195,7 +203,7 @@ bool Commands::execforcommand(string& com)
 			perror("Error in creating fork");
 			return false;
 		}
-		if(signal(SIGINT, handle_SIGINT) == SIG_ERR)
+		if(signal(SIGINT, Commands::sigHandle) == SIG_ERR)
 		{
 			perror("Error in signal");
 		}
@@ -209,6 +217,7 @@ bool Commands::execforcommand(string& com)
 			{
 				perror("Error in executing command line 202");
 				exit(1);
+			}	
 		}
 		else
 		{
@@ -225,21 +234,35 @@ bool Commands::execforcommand(string& com)
 		}
 		return false;
 }
+
+void Commands::getarg(string& com, char* arrayargs[])
+{
+    char * WOwhitespace = strtok(&com[0], "\t"); //to remove whitespace 
+    vector <string> temps;
+    while (WOwhitespace)
+    {
+        temps.push_back(WOwhitespace);
+        WOwhitespace = strtok(0, "\t");
+    }
+    for (int i = 0; i < temps.size(); ++i)
+    {
+        string &toSwap = temps.at(i);
+        arrayargs[i] = &toSwap[0];
+    }
+    arrayargs[temps.size()] = '\0';
 }
-void handle_SIGINT(int signal)
+void sigHandle(int signal)
 {
 
 }
-
 int main(int argc, char * argv[])
 {
 	string line;
-
 	Commands * c = new Commands();	
 	while(1)
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
-	  if(signal(SIGINT, handle_SIGINT) == SIG_ERR)
+	  if(signal(SIGINT, sigHandle) == SIG_ERR)
 	  {
 		perror("Error in signal");
 	  }
