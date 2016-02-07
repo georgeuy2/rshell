@@ -128,19 +128,22 @@ bool Commands::execforcommand(string& com)
 				perror("Error in getcwd()");
 			}
 			int tricheck = chdir(com.c_str());
-			tricheck <= -1 ? perror("Error in chdir()") : return true;
+			if (tricheck <= -1 )
+        		{
+         			perror("Error in chdir()");
+        		}
+       			return true; 
 		}
 		else if(strcmp(args, "-") == 0)
 		{
-			cdit = "";
-			string = getnv("OLDPWD");
-		
+			cdir = "";
+			strings = getenv("OLDPWD");
+			char * check = getcwd(path, 2047);
+
 			if(strings != '\0')
 			{
-				directory += strings;
+				cdir += strings;
 			}
-			char * check = getcwd(path, 2047);
-			
 			else
 			{
 				perror("Error in getenv()");
@@ -151,7 +154,7 @@ bool Commands::execforcommand(string& com)
 			
 				if(checkcheck <= -1)
 				{
-					perror("Error in setenv")l;
+					perror("Error in setenv");
 				}
 			}
 			else
@@ -159,10 +162,15 @@ bool Commands::execforcommand(string& com)
 				perror("Error in getcwd()");
 			}
 			
-			int tricheck = chdir(directory.c_str());
-			tricheck <= -1 ? perror("Error in chdir()") : return true;
+			int tricheck = chdir(cdir.c_str());
+			if(tricheck <= -1) 
+			{
+				perror("Error in chdir()");
+			} 
+			return true;
+		  }
 		}
-		
+	}	
 		int pro1 = fork();	//Forking
 		if(pro1 <= -1)
 		{
