@@ -168,8 +168,26 @@ bool Commands::execforcommand(string& com)
 				perror("Error in chdir()");
 			} 
 			return true;
-		  }
+		 }
+		char * check = getcwd(path, 2047);
+		if(check != '\0')
+		{
+			int checkcheck = setenv("OLDPWD", path, 1);
+			if(checkcheck <= -1)
+			{
+				perror("Error in setenv()");
+			}
 		}
+		else
+		{
+			perror("Error in getcwd()");
+		}
+		int tricheck = chdir(args);
+		if(tricheck <= -1)
+		{
+			perror("Error in chdir()");	
+		}
+		return true;
 	}	
 		int pro1 = fork();	//Forking
 		if(pro1 <= -1)
