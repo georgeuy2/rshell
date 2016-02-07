@@ -86,9 +86,120 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 
 bool Commands::execforcommand(string& com)
 {
-//	com.compare("exit") == 0 ? exit(0):;	//check if command exits
-}
+	if(com.compare("exit") == 0)
+	{
+		exit(0);
+	}
+	
+	int location = com.find("cd");
 
+	if(location > -1)
+	{
+		string cdir;
+		char * strings;
+		string homebase;
+		const char * args;
+		char path[2048];
+		string t = "";
+
+		if(com.size() > 2)
+		{
+			t = com.substr(location + 3);
+			args = t.c_str();
+		}
+
+		if(t.size() == 0)
+		{
+			char * directory = getenv("HOME");
+			homebase = "";
+			directory == NULL ? perror("Error in getenv()") : homebase = homebase + directory;
+			char * check = (getcwd(path, 2057));
+
+			if(check != '\0')
+			{
+				int checkcheck = setenv("OLDPWD", path, 1);
+				if(checkcheck <= -1)
+				{
+					perror("Error in setenv()");
+				}
+			}
+			else
+			{
+				perror("Error in getcwd()");
+			}
+			int tricheck = chdir(com.c_str());
+			tricheck <= -1 ? perror("Error in chdir()") : return true;
+		}
+		else if(strcmp(args, "-") == 0)
+		{
+			cdit = "";
+			string = getnv("OLDPWD");
+		
+			if(strings != '\0')
+			{
+				directory += strings;
+			}
+			char * check = getcwd(path, 2047);
+			
+			else
+			{
+				perror("Error in getenv()");
+			}
+			if(check != '\0');
+			{
+				int checkcheck = setenv("OLDPWD", path, 1);
+			
+				if(checkcheck <= -1)
+				{
+					perror("Error in setenv")l;
+				}
+			}
+			else
+			{
+				perror("Error in getcwd()");
+			}
+			
+			int tricheck = chdir(directory.c_str());
+			tricheck <= -1 ? perror("Error in chdir()") : return true;
+		}
+		
+		int pro1 = fork();	//Forking
+		if(pro1 <= -1)
+		{
+			perror("Error in creating fork");
+			return false;
+		}
+		if(signal(SIGINT, handle_SIGINT) == SIG_ERR)
+		{
+			perror("Error in signal");
+		}
+		else if(pro1 == 0)
+		{
+			char * arg[2048];
+			getarg(com, arg);
+			int res = execvp(*arg, arg);
+			
+			if(res <= -1)
+			{
+				perror("Error in executing command line 202");
+				exit(1);
+		}
+		else
+		{
+			int childWait = waitpid(pro1, &childWait, 0);
+			if(childWait <= -1)
+			{
+				perror("Waiting failed");
+			}
+			if(childWait == 0)
+			{
+				return true;
+			}
+		return false;
+		}
+		return false;
+}
+}
 void handle_SIGINT(int signal)
 {
 
