@@ -4,7 +4,7 @@ CS100 Assignment 2
 This program runs as a bash terminal. It functions with the same commands as a standard bash terminal and uses perror() to give feedback on the execution of command.
 #Install Instructions
 To install this project:
-    $ git clone https://github.com/georgeuy2/rshell.git
+	$ git clone https://github.com/georgeuy2/rshell.gi
 	$ cd rshell
 	$ git checkout exec
 	$ make
