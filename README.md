@@ -12,6 +12,6 @@ $ make
 $ bin/rshell
 ```
 #Known Bugs/Limitations
-* Tabs and control + character are treated as characters and not auto-finish.
+* Tabs, control + character, and arrow keys are treated as characters and not auto-finish.
 * cd .. does not work while stringed together with another command via a connector.
 * 
