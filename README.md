@@ -5,7 +5,7 @@ This program runs as a bash terminal. It functions with the same commands as a s
 #Install Instructions
 To install this project:
 ```
-$ git clone https://github.com/georgeuy2/rshell.gi
+$ git clone https://github.com/georgeuy2/rshell.git
 $ cd rshell
 $ git checkout exec
 $ make
