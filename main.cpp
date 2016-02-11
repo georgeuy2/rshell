@@ -61,8 +61,8 @@ void Commands::commandP(string& com)
 
 int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
 {
-	const char * locOr = strstr(com.c_str(), "||");
-	const char * locAnd = strstr(com.c_str(), "&&");
+	const char * locOr = strstr(com.c_str(), "&&");
+	const char * locAnd = strstr(com.c_str(), "||");
 	
 	if(locOr < locAnd && locAnd && locOr)
 	{
