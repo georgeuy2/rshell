@@ -61,23 +61,31 @@ void Commands::commandP(string& com)
 
 int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
 {
-	const char * locOr = strstr(com.c_str(), "||");
+cout << "locOr b4: " << com << endl;
 	const char * locAnd = strstr(com.c_str(), "&&");
-	
-	if(locOr < locAnd && locAnd && locOr)
+	const char * locOr = strstr(com.c_str(), "||");
+cout << "locOr: " << locOr << endl;	
+	if(locAnd < locOr && locOr && locAnd)
 	{
-		locAnd = 0;
+	cout << "test 1" << endl;	
+	locOr = 0;
 	}
 	
-	if(locAnd != 0)
+	if(locOr != 0) // for || statments
 	{
-		orCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck); //command succeeded
-		orCheck != 1 ? connectP(locAnd + 2, 2, 0) : connectP(locAnd + 2, 1, 0);
+	//	cout << "test 1a:" << locOr<<endl;
+		
+		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck); 
+		cout << "orCheck: " << orCheck << endl;
+		orCheck != 1 ? connectP(locOr + 2, 1, 1) : connectP(locOr + 2, 1, 0);
 	}
-	else if(locOr != 0)
+	else if(locAnd != 0) // for && statements
 	{
-		andCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck);
-		andCheck != 1 ? connectP(locOr + 2, 0, 1) : connectP(locOr + 2, 0, 2);
+	//	cout << "test 1b:" << locAnd << endl;
+		cout << "what is sub: " << com.substr(0, locAnd - com.c_str()) << endl;
+		andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
+		andCheck != 1 ? connectP(locAnd + 2, 0, 1) : connectP(locAnd + 2, 0, 2);
+	//	cout << "andCheck:"<< andCheck << endl;
 	}
 	else
 	{
@@ -89,6 +97,7 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 		{
 			return 0;
 		}
+		//cout << "# for execforcommand(com): " << execforcommand(com) << endl;
 		return execforcommand(com);
 	}
 	return 0;	
@@ -248,13 +257,18 @@ bool Commands::execforcommand(string& com)
 	{
 		char * arg[2048];
 		getarg(com, arg);
-
+		cout << "string1`2 : " << *arg << endl;
 		int res = execvp(*arg, arg);
+		cout << "res: " << res << endl;
 		if (res <= -1)	
 		{
 			perror("ERROR IN EXECUTING COMMAND LINE 202");
+		//	cout << "res: " << res << endl;
+	//		return true;
 			exit(1);
 		}
+	//	cout << "res: " << res << endl;
+		//return true;
 	}
 	else 
 	{
