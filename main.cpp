@@ -22,12 +22,20 @@ void prompt()
 	gethostname(hostname, 1023) < 0 ? cout << "@host" : cout << "@" << hostname << " ";
 	
 	char path[1024];
-	char* checkPath = getcwd(path, 1023);
-	if(checkPath == NULL)
+	char* check = strrchr(getcwd(path,1023 ), '/'); //gets the Current path
+	if(check == NULL)
 	{
-		perror("Error in getcwd");
-  	}
-	cout << path;
+		perror("Error in gecwd");
+	}
+	if(check)
+	{
+		++check;	//removes /
+	}
+	else
+	{
+		check = path;
+	}
+	cout << check;
 	cout << "$ ";
 }
 
@@ -65,30 +73,40 @@ void Commands::commandP(string& com)
 
 int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
 {
+//	cout << "ORCHECK: " << orCheck << endl;
 	const char* locOr = strstr(com.c_str(), "||");
 	const char* locAnd = strstr(com.c_str(), "&&");
 	if(locOr > locAnd && locAnd && locOr)
 	{
+//cout << "asdfasfsdf " << endl;
 		locOr = 0; 
 	}
 	if(locOr != 0)		
-	{
-		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck); //command succeeded
+	{ //cout << "Orchec: " << orCheck << endl;
+		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck++, andCheck); //command succeeded
 		
-		if(orCheck == 1)
+		if(orCheck != 1 && andCheck != 0 )
 		{
-			return connectP(locOr + 2, 1, 0); 
+	cout << "hello" << endl;
+			connectP(locOr + 2, 1, 0); 
+		}
+		else if(orCheck!= 1 && andCheck == 0)
+		{
+		cout << "test1: " << andCheck << endl;	
+		connectP(locOr + 2, 1, 1);	
 		}
 		else  //Command failed
 		{
-			return connectP(locOr + 2, 2, 0);
+//		cout << " else " << endl;
+			connectP(locOr + 2, 0, 2);
 		} 
 	}
 	
 	else if (locAnd != 0)	
 	{ 
-		andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
-		andCheck == 1 ? connectP(locAnd + 2, 0, 2) : connectP(locAnd + 2, 0, 1); 
+//	cout << "locANd " << endl;
+	andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
+		andCheck != 1 ? connectP(locAnd + 2, 0, 1) : connectP(locAnd + 2, 0, 2); 
 	}
 	else
 	{
