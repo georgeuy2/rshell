@@ -14,4 +14,4 @@ $ bin/rshell
 #Known Bugs/Limitations
 * Tabs, control + character, and arrow keys are treated as characters and not auto-finish.
 * cd .. does not work while stringed together with another command via a connector.
-* 
+* The || connector does not work with certain commands missing their arguments (i.e. "ls-" or "mkdir")  
