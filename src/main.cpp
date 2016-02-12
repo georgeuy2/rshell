@@ -46,7 +46,11 @@ void Commands::commandP(string& com)
 	int hashfound = com.find("#");		// for comments
 	char * temp;
 
-	hashfound > -1 ? com.erase(hashfound): temp = strtok(&com[0], ";");
+	if(hashfound > -1)
+	{
+			 com.erase(hashfound);
+	}
+	temp = strtok(&com[0], ";");
 	while(temp)
 	{
 	  string temptemp(temp);
@@ -240,10 +244,6 @@ bool Commands::execforcommand(string& com)
 		perror("ERROR IN CREATING FORK");
 		return false;
 	}
-	if (signal(SIGINT, sigHandle) == SIG_ERR)
-	{
-		perror ("ERROR IN SIGNAL");
-	}
 	else if (pro == 0)	
 	{
 		char * arg[2048];
@@ -288,10 +288,6 @@ void Commands::getarg(string& com, char* arrayargs[])
     arrayargs[temps.size()] = '\0';
 }
 
-void sigHandle(int signal)
-{
-
-}
 int main(int argc, char * argv[])
 {
 	string commLine;
@@ -299,10 +295,6 @@ int main(int argc, char * argv[])
 	while(1)
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
-	  if(signal(SIGINT, sigHandle) == SIG_ERR)
-	  {
-		perror("Error in signal");
-	  }
 	  getline(cin, commLine);	
 
 	  if(commLine == "exit")	//EXIT program if user types "exit"
