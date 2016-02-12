@@ -43,10 +43,14 @@ class Commands{
 
 void Commands::commandP(string& com)
 {
-	int hashfound = com.find("#");		// for comments
+	int hashfound = com.find("#");		//Looks for ocmments 
 	char * temp;
+	if(hashfound > -1) 			//Comment found	
+	{
+		com.erase(hashfound);
+	}
+	temp = strtok(&com[0], ";");
 
-	hashfound > -1 ? com.erase(hashfound): temp = strtok(&com[0], ";");
 	while(temp)
 	{
 	  string temptemp(temp);
@@ -61,31 +65,30 @@ void Commands::commandP(string& com)
 
 int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
 {
-cout << "locOr b4: " << com << endl;
-	const char * locAnd = strstr(com.c_str(), "&&");
-	const char * locOr = strstr(com.c_str(), "||");
-cout << "locOr: " << locOr << endl;	
-	if(locAnd < locOr && locOr && locAnd)
+	const char* locOr = strstr(com.c_str(), "||");
+	const char* locAnd = strstr(com.c_str(), "&&");
+	if(locOr > locAnd && locAnd && locOr)
 	{
-	cout << "test 1" << endl;	
-	locOr = 0;
+		locOr = 0; 
+	}
+	if(locOr != 0)		
+	{
+		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck); //command succeeded
+		
+		if(orCheck == 1)
+		{
+			return connectP(locOr + 2, 1, 0); 
+		}
+		else  //Command failed
+		{
+			return connectP(locOr + 2, 2, 0);
+		} 
 	}
 	
-	if(locOr != 0) // for || statments
-	{
-	//	cout << "test 1a:" << locOr<<endl;
-		
-		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck); 
-		cout << "orCheck: " << orCheck << endl;
-		orCheck != 1 ? connectP(locOr + 2, 1, 1) : connectP(locOr + 2, 1, 0);
-	}
-	else if(locAnd != 0) // for && statements
-	{
-	//	cout << "test 1b:" << locAnd << endl;
-		cout << "what is sub: " << com.substr(0, locAnd - com.c_str()) << endl;
+	else if (locAnd != 0)	
+	{ 
 		andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
-		andCheck != 1 ? connectP(locAnd + 2, 0, 1) : connectP(locAnd + 2, 0, 2);
-	//	cout << "andCheck:"<< andCheck << endl;
+		andCheck == 1 ? connectP(locAnd + 2, 0, 2) : connectP(locAnd + 2, 0, 1); 
 	}
 	else
 	{
@@ -97,7 +100,6 @@ cout << "locOr: " << locOr << endl;
 		{
 			return 0;
 		}
-		//cout << "# for execforcommand(com): " << execforcommand(com) << endl;
 		return execforcommand(com);
 	}
 	return 0;	
@@ -257,18 +259,12 @@ bool Commands::execforcommand(string& com)
 	{
 		char * arg[2048];
 		getarg(com, arg);
-		cout << "string1`2 : " << *arg << endl;
 		int res = execvp(*arg, arg);
-		cout << "res: " << res << endl;
 		if (res <= -1)	
 		{
 			perror("ERROR IN EXECUTING COMMAND LINE 202");
-		//	cout << "res: " << res << endl;
-	//		return true;
 			exit(1);
 		}
-	//	cout << "res: " << res << endl;
-		//return true;
 	}
 	else 
 	{
