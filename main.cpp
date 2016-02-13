@@ -51,14 +51,14 @@ class Commands{
 
 void Commands::commandP(string& com)
 {
-	int hashfound = com.find("#");		//Looks for ocmments 
+	int hashfound = com.find("#");		// for comments
 	char * temp;
-	if(hashfound > -1) 			//Comment found	
+
+	if(hashfound > -1)
 	{
-		com.erase(hashfound);
+			 com.erase(hashfound);
 	}
 	temp = strtok(&com[0], ";");
-
 	while(temp)
 	{
 	  string temptemp(temp);
@@ -71,41 +71,36 @@ void Commands::commandP(string& com)
 	}
 }
 
+
 int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
 {
-//	cout << "ORCHECK: " << orCheck << endl;
 	const char* locOr = strstr(com.c_str(), "||");
 	const char* locAnd = strstr(com.c_str(), "&&");
 	if(locOr > locAnd && locAnd && locOr)
 	{
-//cout << "asdfasfsdf " << endl;
 		locOr = 0; 
 	}
 	if(locOr != 0)		
-	{ //cout << "Orchec: " << orCheck << endl;
+	{ 
 		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck++, andCheck); //command succeeded
 		
 		if(orCheck != 1 && andCheck != 0 )
 		{
-	cout << "hello" << endl;
 			connectP(locOr + 2, 1, 0); 
 		}
 		else if(orCheck!= 1 && andCheck == 0)
 		{
-		cout << "test1: " << andCheck << endl;	
 		connectP(locOr + 2, 1, 1);	
 		}
 		else  //Command failed
 		{
-//		cout << " else " << endl;
 			connectP(locOr + 2, 0, 2);
 		} 
 	}
 	
 	else if (locAnd != 0)	
 	{ 
-//	cout << "locANd " << endl;
-	andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
+		andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
 		andCheck != 1 ? connectP(locAnd + 2, 0, 1) : connectP(locAnd + 2, 0, 2); 
 	}
 	else
@@ -125,12 +120,13 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 
 bool Commands::execforcommand(string& com)
 {
-	if (com.compare("exit") == 0)	
+	if (com.compare("exit") == 0) //check for exit	
 	{
 		exit(0);
 	}
 	int location = com.find("cd");
-	if (location > -1 )	
+	
+	if (location > -1 ) //thats a negatory for cd	
 	{
 		string cdir;
 		char* strings;
@@ -138,12 +134,12 @@ bool Commands::execforcommand(string& com)
 		const char* args;
 		string homebase;
 		string temps = "";
-		if (com.size() > 2)
+		if (com.size() > 2) //so not ls, cd, etc
 		{
 			temps = com.substr(location + 3);
 			args = temps.c_str();
 		}
-		if (temps.size() == 0)	
+		if (temps.size() == 0) //could be ls	
 		{
 			char * cdir = getenv("HOME");
 			homebase = "";
@@ -175,7 +171,7 @@ bool Commands::execforcommand(string& com)
 			}
 			return true;
 		}
-		else if (strcmp(args, "-") == 0) 
+		else if (strcmp(args, "-") == 0) //checking args
 		{
 			cdir = "";
 			strings = getenv("OLDPWD");
@@ -255,7 +251,7 @@ bool Commands::execforcommand(string& com)
 		{
 			perror("Error in getcwd()");
 		}
-		int tricheck = chdir(args);
+		int tricheck = chdir(args); //problems with args
 		if (tricheck <= -1) 
 		{
 			perror("error in chdir");
@@ -263,20 +259,17 @@ bool Commands::execforcommand(string& com)
 		
 		return true;
 	}
-	int pro = fork();
-	if (pro <= -1)	
+	int pro = fork(); //time to fork
+	if (pro <= -1)	//-1 is error
 	{
 		perror("ERROR IN CREATING FORK");
 		return false;
 	}
-	if (signal(SIGINT, sigHandle) == SIG_ERR)
-	{
-		perror ("ERROR IN SIGNAL");
-	}
-	else if (pro == 0)	
+	else if (pro == 0) //in child process	
 	{
 		char * arg[2048];
 		getarg(com, arg);
+
 		int res = execvp(*arg, arg);
 		if (res <= -1)	
 		{
@@ -284,7 +277,7 @@ bool Commands::execforcommand(string& com)
 			exit(1);
 		}
 	}
-	else 
+	else //in parent process
 	{
 		int childWait = waitpid(pro, &childWait, 0);
 		if (childWait <= -1)
@@ -301,11 +294,11 @@ bool Commands::execforcommand(string& com)
 
 void Commands::getarg(string& com, char* arrayargs[])
 {
-    char* WOwhitespace = strtok(&com[0], " \t");
+    char * WOwhitespace = strtok(&com[0], " \t"); //removes whitespace
     vector<string> temps;
     while (WOwhitespace)
     {
-        temps.push_back(WOwhitespace);
+        temps.push_back(WOwhitespace); //pushing back without whitespace
         WOwhitespace = strtok(0, " \t");
     }
     for (unsigned i = 0; i < temps.size(); ++i)
@@ -316,21 +309,13 @@ void Commands::getarg(string& com, char* arrayargs[])
     arrayargs[temps.size()] = '\0';
 }
 
-void sigHandle(int signal)
-{
-
-}
 int main(int argc, char * argv[])
 {
 	string commLine;
 	Commands * c = new Commands();	
-	while(1)
+	while(1) //wamt jos tp lee[ going because exit will end it here or in functions
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
-	  if(signal(SIGINT, sigHandle) == SIG_ERR)
-	  {
-		perror("Error in signal");
-	  }
 	  getline(cin, commLine);	
 
 	  if(commLine == "exit")	//EXIT program if user types "exit"
