@@ -22,12 +22,20 @@ void prompt()
 	gethostname(hostname, 1023) < 0 ? cout << "@host" : cout << "@" << hostname << " ";
 	
 	char path[1024];
-	char* checkPath = getcwd(path, 1023);
-	if(checkPath == NULL)
+	char* check = strrchr(getcwd(path,1023 ), '/'); //gets the Current path
+	if(check == NULL)
 	{
-		perror("Error in getcwd");
-  	}
-	cout << path;
+		perror("Error in gecwd");
+	}
+	if(check)
+	{
+		++check;	//removes /
+	}
+	else
+	{
+		check = path;
+	}
+	cout << check;
 	cout << "$ ";
 }
 
@@ -63,40 +71,46 @@ void Commands::commandP(string& com)
 	}
 }
 
+
 int Commands::connectP(string com, int andCheck, int orCheck) // for parsing connectors
 {
-	const char * locOr = strstr(com.c_str(), "&&");
-	const char * locAnd = strstr(com.c_str(), "||");
-	
-	if(locOr < locAnd && locAnd && locOr)
+	const char* locOr = strstr(com.c_str(), "||");
+	const char* locAnd = strstr(com.c_str(), "&&");
+	if(locOr > locAnd && locAnd && locOr)
 	{
-		//cout << "Test 0" << locAnd << " " << locOr << endl;
-		locAnd = 0;
+		locOr = 0; 
+	}
+	if(locOr != 0)		
+	{ 
+		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck++, andCheck); //command succeeded
+		
+		if(orCheck != 1 && andCheck != 0 )
+		{
+			connectP(locOr + 2, 1, 0); 
+		}
+		else if(orCheck!= 1 && andCheck == 0)
+		{
+		connectP(locOr + 2, 1, 1);	
+		}
+		else  //Command failed
+		{
+			connectP(locOr + 2, 0, 2);
+		} 
 	}
 	
-	if(locAnd != 0) //when user types ||
-	{
-		// cout << "Test 1" << locAnd << " " locOr << endl;
-		orCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck); //command succeeded
-		orCheck != 1 ? connectP(locAnd + 2, 2, 0) : connectP(locAnd + 2, 1, 0);
-	}
-	else if(locOr != 0) //when user types &&
-	{
-		//cout << "Test 2" << locAnd << " " << locOr << endl;
-		andCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck, andCheck);
-		andCheck != 1 ? connectP(locOr + 2, 0, 1) : connectP(locOr + 2, 0, 2);
+	else if (locAnd != 0)	
+	{ 
+		andCheck = connectP(com.substr(0, locAnd - com.c_str()), orCheck, andCheck);
+		andCheck != 1 ? connectP(locAnd + 2, 0, 1) : connectP(locAnd + 2, 0, 2); 
 	}
 	else
 	{
-		// cout << "Test 3" << locAnd << " " << locOr << endl; 
 		if(orCheck == 2)
 		{
-			//cout << "Test d" << locAnd << " " << locOr << endl;
 			return 0;
 		}
 		if(andCheck == 2)
 		{
-			//cout << "Test e " << locAnd << " " << locAnd << endl;
 			return 0;
 		}
 		return execforcommand(com);
