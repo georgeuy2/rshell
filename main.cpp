@@ -80,16 +80,21 @@ void Commands::testP(string& com)
     string t = "test";
     if (rmtest != string::npos)     //remove test
     {
-	 cout << "Test works" << endl;    
+//	 cout<< "WORD: " << com << endl;
+//	 cout << "Test works" << endl;    
    	 com.erase(rmtest, t.length());
+  //  cout<< "WORD: " << com << endl;
     }
     int rmbracket1 = com.find("[");
     string first = "[";
     if (rmbracket1 != string::npos)  //remove brackets
     {
-	cout << "test with [ ] " << endl;
+//	cout <<"CHECKING BRACKETS: " << com << endl;
+//	cout << "test with [  " << endl;
         com.erase(rmbracket1, first.length());
-        int rmbracket2 = com.find("]");
+//	cout <<"CHECKING BRACKETS: " << com << endl;
+
+	int rmbracket2 = com.find("]");
         string second = "]";
         if (rmbracket2 != string::npos)
         {
@@ -99,6 +104,8 @@ void Commands::testP(string& com)
         {
             perror("Error: command not found."); //missing second bracket
         }
+//	cout <<"CHECKING second BRACKETS: " << com << endl;
+
     }
     starttest(com);
     
@@ -114,26 +121,26 @@ void Commands::starttest(string& com)
     bool flage = false;
     bool flagf = false;
     bool flagd = false;
-    if (finde != string::npos)     //remove test
+    if (finde != string::npos)     //remove -e and set flage true
     {
-        com.erase(finde, e.length());
+	com.erase(finde, e.length());
         flage = true;
     }
-    else if (findf != string::npos)
+    else if (findf != string::npos) //remove -f and set flagf true
     {
-    	com.erase(findf, f.length());
-    	flagf = true;
+	com.erase(findf, f.length());
+	flagf = true;
     }
-    else if (findd != string::npos)
+    else if (findd != string::npos) //remove -d and set flagd true
     {
-    	com.erase(findd, d.length());
-    	flagd = true;
+   	com.erase(findd, d.length());
+	flagd = true;
     }
-    else 
+    else			//if no flags then -e is set by default 
     {
-    	flage = true;
+	flage = true;
     }
-    if ((flage && flagf) || (flage && flagd) || (flagf && flagd))
+    if ((flage && flagf) || (flage && flagd) || (flagf && flagd)) //gives error if too many flags
     {
     	perror("Too many flags");
     }
