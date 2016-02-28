@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
@@ -81,12 +80,14 @@ void Commands::testP(string& com)
     string t = "test";
     if (rmtest != string::npos)     //remove test
     {
-        com.erase(rmtest, t.length());
+	 cout << "Test works" << endl;    
+   	 com.erase(rmtest, t.length());
     }
     int rmbracket1 = com.find("[");
     string first = "[";
     if (rmbracket1 != string::npos)  //remove brackets
     {
+	cout << "test with [ ] " << endl;
         com.erase(rmbracket1, first.length());
         int rmbracket2 = com.find("]");
         string second = "]";
@@ -410,20 +411,29 @@ int main(int argc, char * argv[])
 {
 	string commLine;
 	Commands * c = new Commands();	
+	
 	while(1) //wamt jos tp lee[ going because exit will end it here or in functions
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
-	  getline(cin, commLine);	
+	  getline(cin, commLine);	  
 
-        if (commLine.find("test") > -1 || commLine.find("[") > -1)
-        {
-            c->testP(commtest);			//I am not sure what is commtest. 
-        }
+	  size_t foundTest = commLine.find("test");	//this will check "test" in the string
+	  size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
+	  size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string 
+	  // check if the string has "test" or "[]" in the string	
+ 	  if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
+	  {
+	//	cout << "test has been passed" << endl;
+		c->testP(commLine);
+	  }
+	
 	  if(commLine == "exit")	//EXIT program if user types "exit"
-	    {
+	  {
 	      exit(0);
-	    }
-	    c->commandP(commLine);
+	  }
+	  
+	  c->commandP(commLine);
+	
 	 }	
 	return 0;
 }
