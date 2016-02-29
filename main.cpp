@@ -7,6 +7,8 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include <sys/stat.h>
+#include <cstring>
 using namespace std;
 
 //Prompt which will print [USERNAME]@[HOSTNAME]$
@@ -74,6 +76,8 @@ void Commands::commandP(string& com)
 }
 
 //BEGIN NEW STUFF
+//
+
 void Commands::testP(string& com)
 {
     int rmtest = com.find("test");
@@ -121,10 +125,12 @@ void Commands::starttest(string& com)
     bool flage = false;
     bool flagf = false;
     bool flagd = false;
+    struct stat sb;
+	
     if (finde != string::npos)     //remove -e and set flage true
     {
-	com.erase(finde, e.length());
-        flage = true;
+        com.erase(finde, e.length());
+	flage = true;
     }
     else if (findf != string::npos) //remove -f and set flagf true
     {
@@ -139,33 +145,40 @@ void Commands::starttest(string& com)
     else			//if no flags then -e is set by default 
     {
 	flage = true;
+//#include "boost/filesystem.hpp"
     }
     if ((flage && flagf) || (flage && flagd) || (flagf && flagd)) //gives error if too many flags
     {
     	perror("Too many flags");
     }
+    
+    char* c = new char[com.length() + 1];
+    strcpy(c, com.c_str());
+    c = strtok(&com[0], " \t");
     if (flage)
     {
+	stat(c,&sb) == 0 ? cout << "(True)" << endl : cout << "(False)" << endl;
     	//do the stuff for flag e
-    	
     }
     else if (flagf)
     {
-    	//do the stuff for flad f
+	(stat(c, &sb) == 0 && S_ISREG(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;   
+	//do the stuff for flad f
     	
     }
     else if(flagd)
     {
-    	//do the stuff for flag d
+	(stat(c, &sb) == 0 && S_ISDIR(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;     
+	//do the stuff for flag d
     	
     }
     else 
     {
-    	perror("flag not recognized");
+    	perror("flag not recognized"); //i dont think we need this
     }
     
     // do we need to get rid of whitespace now?
-    //now we need to figure out how to use that stat() and the other stuff I mentioned
+    //now we need to figure out how to use that stat() and the other stuff I mentioned	
 }
 
 //END NEW STUFF
@@ -430,17 +443,16 @@ int main(int argc, char * argv[])
 	  // check if the string has "test" or "[]" in the string	
  	  if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
 	  {
-	//	cout << "test has been passed" << endl;
 		c->testP(commLine);
 	  }
-	
-	  if(commLine == "exit")	//EXIT program if user types "exit"
+	  else if(commLine == "exit")	//EXIT program if user types "exit"
 	  {
 	      exit(0);
 	  }
-	  
-	  c->commandP(commLine);
-	
+	  else
+	  {
+	      c->commandP(commLine);
+	  }
 	 }	
 	return 0;
 }
