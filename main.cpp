@@ -126,10 +126,10 @@ void Commands::starttest(string& com)
     bool flagf = false;
     bool flagd = false;
     struct stat sb;
-	
     if (finde != string::npos)     //remove -e and set flage true
     {
-        com.erase(finde, e.length());
+ 
+       com.erase(finde, e.length());
 	flage = true;
     }
     else if (findf != string::npos) //remove -f and set flagf true
@@ -152,14 +152,16 @@ void Commands::starttest(string& com)
     	perror("Too many flags");
     }
     
+    string s = " \t";
     char* c = new char[com.length() + 1];
     strcpy(c, com.c_str());
-    c = strtok(&com[0], " \t");
-    if (flage)
+
+    c = strtok(&com[0], " \t");		//c will have the data path
+
+ if (flage)
     {
 	stat(c,&sb) == 0 ? cout << "(True)" << endl : cout << "(False)" << endl;
-    	//do the stuff for flag e
-    }
+	}
     else if (flagf)
     {
 	(stat(c, &sb) == 0 && S_ISREG(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;   
@@ -176,7 +178,29 @@ void Commands::starttest(string& com)
     {
     	perror("flag not recognized"); //i dont think we need this
     }
-    
+	
+	int findc = com.find(c);
+	com.erase(findc, strlen(c) + 1);	// this will delete the data path
+	com.erase(com.find(" "), s.length());		//also deletes the first space
+
+	string orC = "||";
+	string andC = "&&";
+	string semiC = ";";
+
+    //when there is connectors after test command
+	if ( com.find("&&") != string::npos )
+	{
+		com.erase(com.find("&&"), andC.length());
+	
+	}
+	else if( com.find("||") != string::npos)
+	{
+		com.erase(com.find("||"), orC.length());
+	}
+	else if( com.find(";") != string::npos)
+	{
+		com.erase(com.find(";"), semiC.length());
+	}
     // do we need to get rid of whitespace now?
     //now we need to figure out how to use that stat() and the other stuff I mentioned	
 }
@@ -196,12 +220,12 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 	
 	if(locOr != 0) //when user types ||
 	{
-		// cout << "Test 1" << locAnd << " " locOr << endl;
+	// cout << "Test 1" <<  endl;
 		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck++, andCheck);
 		//command succeeded
 		if (orCheck != 1)
 		{
-				connectP(locOr + 2, 2, 0);
+			connectP(locOr + 2, 2, 0);
 		}
 		//else if (orCheck != 1 && andCheck == 0)
 		//{
@@ -445,14 +469,12 @@ int main(int argc, char * argv[])
 	  {
 		c->testP(commLine);
 	  }
-	  else if(commLine == "exit")	//EXIT program if user types "exit"
+	  if(commLine == "exit")	//EXIT program if user types "exit"
 	  {
 	      exit(0);
 	  }
-	  else
-	  {
+	  
 	      c->commandP(commLine);
-	  }
 	 }	
 	return 0;
 }
