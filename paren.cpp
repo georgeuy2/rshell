@@ -1,4 +1,7 @@
 #include <iostream>
+using namespace std;
+
+#include <iostream>
 #include <unistd.h>
 #include <stdio.h>
 #include <boost/tokenizer.hpp>
@@ -45,33 +48,13 @@ void prompt()
 class Commands{
 	public:
 	  Commands(){};
-	  void commandP(string& com);	//for parsing command
-	  void parenP(string& com);
-	  int getNextCon(string& com);
+	  void commandP(string& com);	//for parsing command	
 	  bool execforcommand(string& com); //for execute commmand
 	  int connectP(string com, int andCheck, int orCheck); // for parsing connectors
 	  void getarg (string& com, char* arrayargs[]);
-	  void starttest(string& com);
-	  void testP(string& com);  //for parsing test
+	  bool starttest(string& com);
+	  bool testP(string& com);  //for parsing test
 };
-
-void Commands::paren(string& com)
-{
-	int beginP = com.find("(");
-	int endP = com.find(")");
-	string temp = com.substr(beginP + 1, endP - 1);
-	connectP(temp);
-	com.erase(beginP, endP);
-	int i = getNextCon(com);
-	
-	
-}
-
-int getNextCon(string& con)
-{
-    int findAND = com.find("&&");
-    int findOR = com.find()
-}
 
 void Commands::commandP(string& com)
 {
@@ -98,27 +81,27 @@ void Commands::commandP(string& com)
 //BEGIN NEW STUFF
 //
 
-void Commands::testP(string& com)
+bool Commands::testP(string& com)
 {
     int rmtest = com.find("test");
     string t = "test";
     if (rmtest != string::npos)     //remove test
     {
-//	 cout<< "WORD: " << com << endl;
-//	 cout << "Test works" << endl;    
+        //	 cout<< "WORD: " << com << endl;
+        //	 cout << "Test works" << endl;    
    	 com.erase(rmtest, t.length());
-  //  cout<< "WORD: " << com << endl;
+        //  cout<< "WORD: " << com << endl;
     }
     int rmbracket1 = com.find("[");
     string first = "[";
     if (rmbracket1 != string::npos)  //remove brackets
     {
-//	cout <<"CHECKING BRACKETS: " << com << endl;
-//	cout << "test with [  " << endl;
+        //	cout <<"CHECKING BRACKETS: " << com << endl;
+        //	cout << "test with [  " << endl;
         com.erase(rmbracket1, first.length());
-//	cout <<"CHECKING BRACKETS: " << com << endl;
+        //	cout <<"CHECKING BRACKETS: " << com << endl;
 
-	int rmbracket2 = com.find("]");
+	    int rmbracket2 = com.find("]");
         string second = "]";
         if (rmbracket2 != string::npos)
         {
@@ -127,14 +110,15 @@ void Commands::testP(string& com)
         else 
         {
             perror("Error: command not found."); //missing second bracket
+            return false;
         }
-//	cout <<"CHECKING second BRACKETS: " << com << endl;
+        //	cout <<"CHECKING second BRACKETS: " << com << endl;
 
     }
-    starttest(com);
+    return starttest(com);
     
 }
-void Commands::starttest(string& com)
+bool Commands::starttest(string& com)
 {
     int finde = com.find("-e");
     string e = "-e";
@@ -150,26 +134,27 @@ void Commands::starttest(string& com)
     if (finde != string::npos)     //remove -e and set flage true
     {
         com.erase(finde, e.length());
-	flage = true;
+	    flage = true;
     }
     else if (findf != string::npos) //remove -f and set flagf true
     {
-	com.erase(findf, f.length());
-	flagf = true;
+	    com.erase(findf, f.length());
+	    flagf = true;
     }
     else if (findd != string::npos) //remove -d and set flagd true
     {
-   	com.erase(findd, d.length());
-	flagd = true;
+   	    com.erase(findd, d.length());
+	    flagd = true;
     }
     else			//if no flags then -e is set by default 
     {
-	flage = true;
+	    flage = true;
 //#include "boost/filesystem.hpp"
     }
     if ((flage && flagf) || (flage && flagd) || (flagf && flagd)) //gives error if too many flags
     {
     	perror("Too many flags");
+    	return false;
     }
     
     char* c = new char[com.length() + 1];
@@ -177,24 +162,50 @@ void Commands::starttest(string& com)
     c = strtok(&com[0], " \t");
     if (flage)
     {
-	stat(c,&sb) == 0 ? cout << "(True)" << endl : cout << "(False)" << endl;
+	    if (stat(c,&sb) == 0 )
+	    {
+	        cout << "(True)" << endl; 
+	        return true; 
+	    }
+	    else {
+	        cout << "(False)" << endl; 
+	        return false;
+	    }
     	//do the stuff for flag e
     }
     else if (flagf)
     {
-	(stat(c, &sb) == 0 && S_ISREG(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;   
-	//do the stuff for flad f
+	    if (stat(c, &sb) == 0 && S_ISREG(sb.st_mode)) 
+	    {
+	        cout << "(True)" << endl; 
+	        return true;
+	    }
+	    else 
+	    {
+	        cout << "(False)" << endl; 
+	        return false;   
+	    }
+	    //do the stuff for flad f
     	
     }
     else if(flagd)
     {
-	(stat(c, &sb) == 0 && S_ISDIR(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;     
-	//do the stuff for flag d
-    	
+	    if (stat(c, &sb) == 0 && S_ISDIR(sb.st_mode)) 
+	    {
+	        cout << "(True)" << endl; 
+	        return true; 
+	    }
+	    else 
+	    {
+	        cout << "(False)" << endl; 
+	        return false;
+	    }
+	    //do the stuff for flag d
     }
     else 
     {
     	perror("flag not recognized"); //i dont think we need this
+    	return false;
     }
     
     // do we need to get rid of whitespace now?
@@ -446,9 +457,9 @@ void Commands::getarg(string& com, char* arrayargs[])
     }
     arrayargs[temps.size()] = '\0';
 }
-
-int main(int argc, char * argv[])
-{
+//to be inserted in main
+int main() {
+	
 	string commLine;
 	Commands * c = new Commands();	
 	
@@ -474,5 +485,171 @@ int main(int argc, char * argv[])
 	      c->commandP(commLine);
 	  }
 	 }	
-	return 0;
+    // Commands * c = new Commands();
+    // string commLine;
+    // vector <string> com;
+    // vector <bool> returnv;
+    
+    // while(1)
+    // {
+    //     prompt();
+    //     getline(cin, commLine);
+    //     while(commLine != "") //while not empty string
+    //     {
+    //         int endP = commLine.find(")");
+    //         if (commLine.find(")") != string::npos)
+    //         {
+    //             if (endP > commLine.find("||") && endP > commLine.find("&&") && endP > commLine.find(";"))
+    //             {
+    //                 if (commLine.find("(") != string::npos)
+    //                 {
+    //                     int beginP = commLine.find("(");
+    //                     com.push_back(commLine.substr(beginP, endP)); //so that it gets rid of the parentheses
+    //                     commLine.erase(beginP, endP); //erase that second from the string
+    //                 }
+    //                 else 
+    //                 {
+    //                     perror("Invalid command.");
+    //                 }
+    //             }
+    //             else 
+    //             {
+    //                 int beginP = commLine.find("(");
+    //                 if (beginP != string::npos)
+    //                 {
+    //                     int findAND = commLine.find("&");
+    //                     int findOR = commLine.find("|");
+    //                     int findSEMI = commLine.find(";");
+    //                     if (findAND != string::npos && findAND - 3 <= 0)
+    //                     {
+    //                         com.push_back("&&");
+    //                         commLine.erase(0, 2);
+    //                     }
+    //                     else if (findOR != string::npos && findOR - 3 <= 0)
+    //                     {
+    //                         com.push_back("||");
+    //                         commLine.erase(0, 2);
+    //                     }
+    //                     else if (findSEMI != string::npos && findSEMI - 3 <= 0)
+    //                     {
+    //                         com.push_back(";");
+    //                         commLine.erase(0, 2);
+    //                     }
+    //                     com.push_back(commLine.substr(0, beginP - 1));
+    //                     commLine.erase(0, beginP - 1);
+    //                 }
+    //                 else 
+    //                 {
+    //                     perror("Invalid command");
+    //                 }
+                    
+    //             }
+    //         }
+    //         else
+    //         {
+    //             size_t foundTest = commLine.find("test");	//this will check "test" in the string
+	   //         size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
+	   //         size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string 
+	   //         // check if the string has "test" or "[]" in the string	
+ 	  //          if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
+	   //         {
+		  //          c->testP(commLine);
+		  //          commLine.erase(0, commLine.size() - 1);
+	   //         }
+	   //         else if(commLine == "exit")	//EXIT program if user types "exit"
+	   //         {
+	   //             exit(0);
+	   //         }
+	   //         else
+	   //         {
+	   //              c->commandP(commLine);
+	   //              commLine.erase(0, commLine.size() - 1);
+	   //         }
+	   //        //okay so pretty much, this else is just to run it like normal
+	   //        //so using the old main, i'm just commenting it out for testing
+    //         }
+    //     }
+    //     for (int i = 0; i < com.size(); ++i)
+    //     {
+    //         if (com.at(i) == "&&" || com.at(i) == ";")
+    //         {
+    //             if(i > 0)
+    //             {
+    //                 size_t foundTest = commLine.find("test");	//this will check "test" in the string
+	   //             size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
+	   //             size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string
+                    
+    //                 if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
+	   //             {
+		  //              ++i;
+		  //              returnv.push_back(c->testP(com.at(i))); //assuming it returns a bool
+		                
+	   //             }
+	   //             else if(commLine == "exit")	//EXIT program if user types "exit"
+	   //             {
+	   //                 exit(0);
+	   //             }
+	   //             else
+	   //             {
+	   //                 ++i;
+	   //                 //returnv.push_back(c->commandP(com.at(i))); //assuming it returns a bool
+	   //             }
+    //             }
+    //             else 
+    //             {
+    //                 perror("Invaid command."); //I'm not sure if thats the right error for this
+    //                 //its for having a connector with nothing infront of it 
+    //             }
+    //         } 
+    //         else if(com.at(i) == "||")
+    //         {
+    //             if(i > 0 && returnv.at(i - 1) == false)
+    //             {
+    //                 size_t foundTest = commLine.find("test");	//this will check "test" in the string
+	   //             size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
+	   //             size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string
+                    
+    //                 if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
+	   //             {
+		  //              ++i;
+		  //              returnv.push_back(c->testP(com.at(i)));
+		                
+	   //             }
+	   //             else if(commLine == "exit")	//EXIT program if user types "exit"
+	   //             {
+	   //                 exit(0);
+	   //             }
+	   //             else
+	   //             {
+	   //                 ++i;
+	   //                 //returnv.push_back(c->commandP(com.at(i)));
+	   //             }
+    //             }
+    //             else 
+    //             {
+    //                 perror("Invaid command."); //I'm not sure if thats the right error for this
+    //                 //its for having a connector with nothing infront of it 
+    //             }
+    //         }
+    //         else 
+    //         {
+    //             size_t foundTest = commLine.find("test");	//this will check "test" in the string
+	   //         size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
+	   //         size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string
+    //             if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
+	   //         {
+		  //          returnv.push_back(c->testP(com.at(i)));
+	   //         }
+	   //         else if(commLine == "exit")	//EXIT program if user types "exit"
+	   //         {
+	   //             exit(0);
+	   //         }
+	   //         else
+	   //         {
+	   //             //returnv.push_back(c->commandP(com.at(i)));
+	   //         }
+    //         }
+    //     }
+    // }
+    // return 0;
 }
