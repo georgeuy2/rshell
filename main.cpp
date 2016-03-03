@@ -51,6 +51,7 @@ class Commands{
 	  void getarg (string& com, char* arrayargs[]);
 	  void starttest(string& com);
 	  void testP(string& com);  //for parsing test
+	  void operatorP(char* tempCom, int numParen, string comLine, vector<string> list);
 };
 
 void Commands::commandP(string& com)
@@ -77,6 +78,35 @@ void Commands::commandP(string& com)
 
 //BEGIN NEW STUFF
 //
+
+void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<string> list){
+	   string line;
+            
+            for(int i = 0; tempCom[i] != '&'; i++ )
+            {
+                if(tempCom[i] == '(')
+                {
+                    numParen ++;
+                    cout << "word: " << tempCom[i] << "number of Paeren: " << numParen << endl;
+                }
+                else if (tempCom[i] == ')' )
+                {
+                    cout << "num: " << numParen << " i: " << i << endl;
+                    line = comLine.substr(numParen, i-1);
+                    numParen--;
+                 cout << "word: " << line << "number of Paeren: " << numParen << endl;
+                list.push_back(line);
+
+                }
+                
+            }
+                for(int j = 0; j != list.size(); j++)
+                {
+                cout << "list: " << list[j] << endl;
+
+                }
+ 
+}
 
 void Commands::testP(string& com)
 {
@@ -456,6 +486,11 @@ int main(int argc, char * argv[])
 	string commLine;
 	Commands * c = new Commands();	
 	
+	vector<string> list;
+	int posFirstP =0;
+    	int posSecP = 0;
+    	int numFirstP = 0;
+
 	while(1) //wamt jos tp lee[ going because exit will end it here or in functions
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
@@ -465,6 +500,12 @@ int main(int argc, char * argv[])
 	  size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
 	  size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string 
 	  // check if the string has "test" or "[]" in the string	
+	  
+	  char* tempCom = new char[commLine.length() + 1];
+    	  strcpy(tempCom, commLine.c_str());
+    	  operatorP(tempCom, posFirstP, commLine, list);
+    	  
+    	  
  	  if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
 	  {
 		c->testP(commLine);
