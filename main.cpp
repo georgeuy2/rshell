@@ -81,30 +81,33 @@ void Commands::commandP(string& com)
 
 void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<string> list){
 	   string line;
-            
-            for(int i = 0; tempCom[i] != '&'; i++ )
+  //   cout << "() detected" << endl;       
+            for(int i = 0; tempCom[i] != '\0' ; i++ )
             {
-                if(tempCom[i] == '(')
+//cout<< "enter loop" << endl; 
+               if(tempCom[i] == '(')
                 {
                     numParen ++;
-                    cout << "word: " << tempCom[i] << "number of Paeren: " << numParen << endl;
+//		cout << "word: " << tempCom[i] << "number of Paeren: " << numParen << " " << i << endl;
                 }
                 else if (tempCom[i] == ')' )
                 {
-                    cout << "num: " << numParen << " i: " << i << endl;
+  //                  cout << "num: " << numParen << " i: " << i << endl;
                     line = comLine.substr(numParen, i-1);
                     numParen--;
-                 cout << "word: " << line << "number of Paeren: " << numParen << endl;
-                list.push_back(line);
-
+// cout << "word: " << line << "number of Paeren: " << numParen << endl;
+       
+            commandP(line); 
+	                //list.push_back(line);
+		
                 }
-                
+         //cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
+       
             }
-                for(int j = 0; j != list.size(); j++)
-                {
-                cout << "list: " << list[j] << endl;
-
-                }
+               // for(int j = 0; j != list.size(); j++)
+             //   {
+//                cout << "end of operator " <<  endl;
+               //}
  
 }
 
@@ -503,7 +506,8 @@ int main(int argc, char * argv[])
 	  
 	  char* tempCom = new char[commLine.length() + 1];
     	  strcpy(tempCom, commLine.c_str());
-    	  operatorP(tempCom, posFirstP, commLine, list);
+    	 
+	 c->operatorP(tempCom, posFirstP, commLine, list);
     	  
     	  
  	  if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
@@ -515,7 +519,7 @@ int main(int argc, char * argv[])
 	      exit(0);
 	  }
 	  
-	      c->commandP(commLine);
+//	      c->commandP(commLine);
 	 }	
 	return 0;
 }
