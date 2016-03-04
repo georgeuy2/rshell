@@ -16,4 +16,4 @@ $ bin/rshell
 * cd .. does not work while stringed together with another command via a connector.
 * The command "wait" produces an error.
 * Using cd with a comment produces an error but not the same error as a standard shell.
-* The || connector does not work with certain commands missing their arguments (i.e. "ls- " or "mk").
+* The || connector does not work with invalid commands (i.e. "moose || echo failed" will only produce an error for invalid command "moose" and not execute command after "||").
