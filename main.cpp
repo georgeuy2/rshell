@@ -55,7 +55,7 @@ class Commands{
 	  void getarg (string& com, char* arrayargs[]);
 	  void starttest(string& com);
 	  void testP(string& com);  //for parsing test
-	  void operatorP(char* tempCom, int numParen, string& comLine, vector<string> list);
+	  void operatorP(char* tempCom, int& numParen, string& comLine, vector<string> list);
 	  int getNumbPare();
 	  void increNumbPare();
 	  void decreNumbPare();
@@ -140,40 +140,49 @@ void Commands::commandP(string& com)
 //BEGIN NEW STUFF
 //
 
-void Commands::operatorP(char* tempCom, int numParen, string& comLine, vector<string> list){
+void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<string> list){
 	   string line;
 //     cout << "() detected" << endl;       
-            for(int i = 0; tempCom[i] != '\0' ; i++ )
+        int size =0;
+	for(int j =0; tempCom[j] != '\0'; j++){
+	size++;
+}    
+	for(int i = 0; tempCom[i] != '\0' ; i++ )
             {
 				//cout<< "enter loop" << endl; 
                if(tempCom[i] == '(')
                 {
                //    			cout << "word: " << tempCom[i] << "number of Paeren: " << getNumbPare() << " " << i << endl;
-               increNumbPare(); 
+               numParen++; 
 		
-			if(getNumbPare() > 1){
-				line = comLine.substr(getNumbPare()-1, i-1);
-				comLine.erase(getNumbPare(), i);
+			if(numParen > 1 && i>=1){
+				line = comLine.substr(numParen-1, i-2);
+				comLine.erase(numParen, i);
 				cout << "line: " << line << endl;
 				cout << "comline: " << comLine << endl;
 				commandP(line);
-			cout << " made it " << endl;	
+	//		cout << " made it " << endl;	
 			}
 			//comLine.erase(i,0);
-			cout << "comline2: " << comLine << endl;
+	//		cout << "comline2: " << comLine << endl;
 			//increNumbPare();
+			if( i +1 < size){
+
 			if(tempCom[i] =='|' && tempCom[i+1])
 			{
 				
 			}
+}
 		}
 
-                else if (tempCom[i] == ')' )
+                else if (tempCom[i] == ')' && i >=1 )
                 {
-                    //cout << "num: " << numParen << " i: " << i << endl;
-                    line = comLine.substr(getNumbPare(), i -1 );
-                    decreNumbPare();
- 					cout << "word: " << line << "number of Paeren: " << getNumbPare() << endl;
+           numParen--;
+         
+	   //cout << "num: " << numParen << " i: " << i << endl;
+                    line = comLine.substr(numParen, i );
+		cout << "comline: " << comLine <<endl;
+                  					cout << "word: " << line << "number of Paeren: " << numParen << endl;
        
             		commandP(line); 
 	                //list.push_back(line);
@@ -365,9 +374,9 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 	// cout << "Test 1" <<  endl;
 		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck++, andCheck);
 		//command succeeded
-		if (orCheck == 1)
+		if (orCheck != 1)
 		{
-			connectP(locOr + 2, 1, 0);
+			connectP(locOr + 2, 2, 0);
 		}
 		//else if (orCheck != 1 && andCheck == 0)
 		//{
@@ -375,8 +384,7 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 		//}
 		else //Command failed
 		{
-				//cout << "command failed" << endl;
-				connectP(locOr + 2, 2, 0);
+				connectP(locOr + 2, 1, 0);
 		}
 	}
 	else if(locAnd != 0) //when user types &&
@@ -387,7 +395,7 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 	}
 	else
 	{
-		//cout << "Test 3" << locAnd << " " << locOr << endl; 
+		// cout << "Test 3" << locAnd << " " << locOr << endl; 
 		if(orCheck == 2)
 		{
 			//cout << "Test d" << locAnd << " " << locOr << endl;
@@ -400,7 +408,6 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 		}
 		bool temp =  execforcommand(com); //i changed this from return execforcommand(com), 
 		//it will still work right?
-		//cout << temp << endl;
 		setparenVal(temp);
 		return temp;
 	}
@@ -580,7 +587,6 @@ bool Commands::execforcommand(string& com)
 		{
 			setparenVal(false);
 			perror("ERROR IN EXECUTING COMMAND LINE 202");
-			//cout << *arg << endl;
 			exit(1);
 		}
 	}
