@@ -48,6 +48,7 @@ class Commands{
 	  Commands(){parenVal = true;};
 	  void setparenVal(bool val);
 	  bool getparenVal();
+	  void parse(string commLine);
 	  void commandP(string& com);	//for parsing command	
 	  bool execforcommand(string& com); //for execute commmand
 	  int connectP(string com, int andCheck, int orCheck); // for parsing connectors
@@ -57,6 +58,39 @@ class Commands{
 	  void operatorP(char* tempCom, int numParen, string comLine, vector<string> list);
 };
 
+void Commands::parse(string commLine)
+{
+		vector <string> list;
+		int posFirstP = 0;
+		int posSecP = 0;
+		int numFirstP = 0;
+		size_t foundTest = commLine.find("test"); //this will check "test in the string
+		size_t foundFirstBracket = commLine.find("["); //this will check "[" in the string
+		size_t foundSecBracket = commLine.find("]"); //this will check "]" in the string
+		//check if the string as "test" or "[]" in it
+		size_t foundParen = commLine.find("(");
+		char * tempCon = new char[commLine.length() + 1];
+		strcpy(tempCon, commLine.c_str());
+		if (foundParen == string::npos)
+		{
+				commandP(commLine);
+				setparenVal(true); //need to reset all these for the next round
+		}
+		else
+		{
+				operatorP(tempCon,posFirstP, commLine, list);
+				setparenVal(true);
+		}
+		if (foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string::npos))
+		{
+				testP(commLine);
+				setparenVal(true);
+		}
+		if (commLine == "exit") //Exit program if user types "exit"
+		{
+				exit(0);
+		}
+}
 void Commands::setparenVal(bool val)
 {
 		parenVal = val;
@@ -104,17 +138,60 @@ void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<str
                 else if (tempCom[i] == ')' )
                 {
                     //cout << "num: " << numParen << " i: " << i << endl;
-                    line = comLine.substr(numParen, i-1);
+                    line = comLine.substr(numParen, i - 1);
                     numParen--;
  					//cout << "word: " << line << "number of Paeren: " << numParen << endl;
        
             		commandP(line); 
 	                //list.push_back(line);
+					//I'm adding this in
+					comLine.erase(numParen, i + 1);
+					cout << comLine << endl;
 		
                 }
          		//cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
        
             }
+		//	if (!comLine.empty())
+		//	{
+		//		if (comLine.length() > 4)
+		//		{
+		//			string temp = comLine.substr(0, 2);
+		//			string temp1 = comLine.substr(0, 1);
+		//			if (temp == " ||")
+		//			{
+		//				if (getparenVal() == false)
+		//				{
+		//						comLine.erase(0, 3);
+		//						setparenVal(true);
+		//						parse(comLine);
+		//				}
+		//				else
+		//				{
+		//						return;
+		//				}
+		//			}
+		//			else if (temp == " &&")
+		//			{
+		//					comLine.erase(0, 3);
+		//					setparenVal(true);
+		//					parse(comLine);
+		//			}
+		//			else if (temp1 == "; ")
+		//			{
+		//					comLine.erase(0, 1);
+		//					setparenVal(true);
+		//					parse(comLine);
+		//			}
+		//			else
+		//			{
+		//					perror("Invalid command.");
+		//			}
+		//		}
+		//	}
+
+
+ 
                // for(int j = 0; j != list.size(); j++)
              //   {
 //                cout << "end of operator " <<  endl;
@@ -557,34 +634,7 @@ int main(int argc, char * argv[])
 	 {
 	  prompt();		//prints [USERNAME]@[HOSTNAME]$	
 	  getline(cin, commLine);	  
-
-	  size_t foundTest = commLine.find("test");	//this will check "test" in the string
-	  size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
-	  size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string 
-	  // check if the string has "test" or "[]" in the string	
-	 	size_t foundParen = commLine.find("("); 
-	  char* tempCom = new char[commLine.length() + 1];
-    	  strcpy(tempCom, commLine.c_str());
-    	if (foundParen == string::npos)
-		{
-				c->commandP(commLine);
-		}
-		else
-		{
-	 		c->operatorP(tempCom, posFirstP, commLine, list);
-		}
-    	  
-    	  
- 	  if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
-	  {
-		c->testP(commLine);
-	  }
-	  if(commLine == "exit")	//EXIT program if user types "exit"
-	  {
-	      exit(0);
-	  }
-	  
-//	      c->commandP(commLine);
+		c->parse(commLine);
 	 }	
 	return 0;
 }
