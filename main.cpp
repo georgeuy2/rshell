@@ -92,27 +92,27 @@ void Commands::commandP(string& com)
 
 void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<string> list){
 	   string line;
-  //   cout << "() detected" << endl;       
+//     cout << "() detected" << endl;       
             for(int i = 0; tempCom[i] != '\0' ; i++ )
             {
-//cout<< "enter loop" << endl; 
+				//cout<< "enter loop" << endl; 
                if(tempCom[i] == '(')
                 {
                     numParen ++;
-//		cout << "word: " << tempCom[i] << "number of Paeren: " << numParen << " " << i << endl;
+					//cout << "word: " << tempCom[i] << "number of Paeren: " << numParen << " " << i << endl;
                 }
                 else if (tempCom[i] == ')' )
                 {
-  //                  cout << "num: " << numParen << " i: " << i << endl;
+                    //cout << "num: " << numParen << " i: " << i << endl;
                     line = comLine.substr(numParen, i-1);
                     numParen--;
-// cout << "word: " << line << "number of Paeren: " << numParen << endl;
+ 					//cout << "word: " << line << "number of Paeren: " << numParen << endl;
        
-            commandP(line); 
+            		commandP(line); 
 	                //list.push_back(line);
 		
                 }
-         //cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
+         		//cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
        
             }
                // for(int j = 0; j != list.size(); j++)
@@ -562,11 +562,17 @@ int main(int argc, char * argv[])
 	  size_t foundFirstBracket = commLine.find("[");	//this will check "[" in the string
 	  size_t foundSecBracket = commLine.find("]");	// this will check "]" in the string 
 	  // check if the string has "test" or "[]" in the string	
-	  
+	 	size_t foundParen = commLine.find("("); 
 	  char* tempCom = new char[commLine.length() + 1];
     	  strcpy(tempCom, commLine.c_str());
-    	 
-	 c->operatorP(tempCom, posFirstP, commLine, list);
+    	if (foundParen == string::npos)
+		{
+				c->commandP(commLine);
+		}
+		else
+		{
+	 		c->operatorP(tempCom, posFirstP, commLine, list);
+		}
     	  
     	  
  	  if(foundTest != string::npos || (foundFirstBracket != string::npos && foundSecBracket != string:: npos))
