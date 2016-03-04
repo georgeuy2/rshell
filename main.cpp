@@ -371,9 +371,9 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 	// cout << "Test 1" <<  endl;
 		orCheck = connectP(com.substr(0, locOr - com.c_str()), orCheck++, andCheck);
 		//command succeeded
-		if (orCheck != 1)
+		if (orCheck == 1)
 		{
-			connectP(locOr + 2, 2, 0);
+			connectP(locOr + 2, 1, 0);
 		}
 		//else if (orCheck != 1 && andCheck == 0)
 		//{
@@ -381,7 +381,8 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 		//}
 		else //Command failed
 		{
-				connectP(locOr + 2, 1, 0);
+				//cout << "command failed" << endl;
+				connectP(locOr + 2, 2, 0);
 		}
 	}
 	else if(locAnd != 0) //when user types &&
@@ -392,7 +393,7 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 	}
 	else
 	{
-		// cout << "Test 3" << locAnd << " " << locOr << endl; 
+		//cout << "Test 3" << locAnd << " " << locOr << endl; 
 		if(orCheck == 2)
 		{
 			//cout << "Test d" << locAnd << " " << locOr << endl;
@@ -405,6 +406,7 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 		}
 		bool temp =  execforcommand(com); //i changed this from return execforcommand(com), 
 		//it will still work right?
+		//cout << temp << endl;
 		setparenVal(temp);
 		return temp;
 	}
@@ -584,6 +586,7 @@ bool Commands::execforcommand(string& com)
 		{
 			setparenVal(false);
 			perror("ERROR IN EXECUTING COMMAND LINE 202");
+			//cout << *arg << endl;
 			exit(1);
 		}
 	}
