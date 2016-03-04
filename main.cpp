@@ -146,7 +146,7 @@ void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<str
 	                //list.push_back(line);
 					//I'm adding this in
 					comLine.erase(numParen, i + 1);
-					cout << comLine << endl;
+					//cout << comLine << endl;
 		
                 }
          		//cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
