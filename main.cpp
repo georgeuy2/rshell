@@ -55,15 +55,29 @@ class Commands{
 	  void getarg (string& com, char* arrayargs[]);
 	  void starttest(string& com);
 	  void testP(string& com);  //for parsing test
-	  void operatorP(char* tempCom, int numParen, string comLine, vector<string> list);
+	  void operatorP(char* tempCom, int numParen, string& comLine, vector<string> list);
+	  int getNumbPare();
+	  void increNumbPare();
+	  void decreNumbPare();
+	private:
+	  int numbFirstP;
 };
 
+int Commands::getNumbPare(){
+	return numbFirstP;
+}
+void Commands::increNumbPare(){
+	numbFirstP++;
+}
+void Commands::decreNumbPare(){
+	numbFirstP--;
+}
 void Commands::parse(string commLine)
 {
 		vector <string> list;
 		int posFirstP = 0;
 		int posSecP = 0;
-		int numFirstP = 0;
+	//	int numFirstP = 0;
 		size_t foundTest = commLine.find("test"); //this will check "test in the string
 		size_t foundFirstBracket = commLine.find("["); //this will check "[" in the string
 		size_t foundSecBracket = commLine.find("]"); //this will check "]" in the string
@@ -73,6 +87,8 @@ void Commands::parse(string commLine)
 		strcpy(tempCon, commLine.c_str());
 		if (foundParen == string::npos)
 		{
+				increNumbPare();
+				cout << "number of (): " << getNumbPare() << endl;
 				commandP(commLine);
 				setparenVal(true); //need to reset all these for the next round
 		}
@@ -124,7 +140,7 @@ void Commands::commandP(string& com)
 //BEGIN NEW STUFF
 //
 
-void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<string> list){
+void Commands::operatorP(char* tempCom, int numParen, string& comLine, vector<string> list){
 	   string line;
 //     cout << "() detected" << endl;       
             for(int i = 0; tempCom[i] != '\0' ; i++ )
@@ -132,65 +148,43 @@ void Commands::operatorP(char* tempCom, int numParen, string comLine, vector<str
 				//cout<< "enter loop" << endl; 
                if(tempCom[i] == '(')
                 {
-                    numParen ++;
-					//cout << "word: " << tempCom[i] << "number of Paeren: " << numParen << " " << i << endl;
-                }
+               //    			cout << "word: " << tempCom[i] << "number of Paeren: " << getNumbPare() << " " << i << endl;
+               increNumbPare(); 
+		
+			if(getNumbPare() > 1){
+				line = comLine.substr(getNumbPare()-1, i-1);
+				comLine.erase(getNumbPare(), i);
+				cout << "line: " << line << endl;
+				cout << "comline: " << comLine << endl;
+				commandP(line);
+			cout << " made it " << endl;	
+			}
+			//comLine.erase(i,0);
+			cout << "comline2: " << comLine << endl;
+			//increNumbPare();
+			if(tempCom[i] =='|' && tempCom[i+1])
+			{
+				
+			}
+		}
+
                 else if (tempCom[i] == ')' )
                 {
                     //cout << "num: " << numParen << " i: " << i << endl;
-                    line = comLine.substr(numParen, i - 1);
-                    numParen--;
- 					//cout << "word: " << line << "number of Paeren: " << numParen << endl;
+                    line = comLine.substr(getNumbPare(), i -1 );
+                    decreNumbPare();
+ 					cout << "word: " << line << "number of Paeren: " << getNumbPare() << endl;
        
             		commandP(line); 
 	                //list.push_back(line);
 					//I'm adding this in
-					comLine.erase(numParen, i + 1);
+					comLine.erase(numParen, i+ 1);
 					//cout << comLine << endl;
 		
                 }
          		//cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
        
             }
-		//	if (!comLine.empty())
-		//	{
-		//		if (comLine.length() > 4)
-		//		{
-		//			string temp = comLine.substr(0, 2);
-		//			string temp1 = comLine.substr(0, 1);
-		//			if (temp == " ||")
-		//			{
-		//				if (getparenVal() == false)
-		//				{
-		//						comLine.erase(0, 3);
-		//						setparenVal(true);
-		//						parse(comLine);
-		//				}
-		//				else
-		//				{
-		//						return;
-		//				}
-		//			}
-		//			else if (temp == " &&")
-		//			{
-		//					comLine.erase(0, 3);
-		//					setparenVal(true);
-		//					parse(comLine);
-		//			}
-		//			else if (temp1 == "; ")
-		//			{
-		//					comLine.erase(0, 1);
-		//					setparenVal(true);
-		//					parse(comLine);
-		//			}
-		//			else
-		//			{
-		//					perror("Invalid command.");
-		//			}
-		//		}
-		//	}
-
-
  
                // for(int j = 0; j != list.size(); j++)
              //   {
