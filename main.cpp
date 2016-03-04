@@ -44,7 +44,10 @@ void prompt()
 
 class Commands{
 	public:
-	  Commands(){};
+	  bool parenVal;
+	  Commands(){parenVal = true;};
+	  void setparenVal(bool val);
+	  bool getparenVal();
 	  void commandP(string& com);	//for parsing command	
 	  bool execforcommand(string& com); //for execute commmand
 	  int connectP(string com, int andCheck, int orCheck); // for parsing connectors
@@ -54,6 +57,14 @@ class Commands{
 	  void operatorP(char* tempCom, int numParen, string comLine, vector<string> list);
 };
 
+void Commands::setparenVal(bool val)
+{
+		parenVal = val;
+}
+bool Commands::getparenVal()
+{
+		return parenVal;
+}
 void Commands::commandP(string& com)
 {
 	int hashfound = com.find("#");		// for comments
@@ -139,6 +150,7 @@ void Commands::testP(string& com)
         }
         else 
         {
+			setparenVal(false);
             perror("Error: command not found."); //missing second bracket
         }
 //	cout <<"CHECKING second BRACKETS: " << com << endl;
@@ -163,25 +175,26 @@ void Commands::starttest(string& com)
     {
  
        com.erase(finde, e.length());
-	flage = true;
+		flage = true;
     }
     else if (findf != string::npos) //remove -f and set flagf true
     {
-	com.erase(findf, f.length());
-	flagf = true;
+		com.erase(findf, f.length());
+		flagf = true;
     }
     else if (findd != string::npos) //remove -d and set flagd true
     {
-   	com.erase(findd, d.length());
-	flagd = true;
+   		com.erase(findd, d.length());
+		flagd = true;
     }
     else			//if no flags then -e is set by default 
     {
-	flage = true;
+		flage = true;
 //#include "boost/filesystem.hpp"
     }
     if ((flage && flagf) || (flage && flagd) || (flagf && flagd)) //gives error if too many flags
     {
+		setparenVal(false);
     	perror("Too many flags");
     }
     
@@ -191,24 +204,49 @@ void Commands::starttest(string& com)
 
     c = strtok(&com[0], " \t");		//c will have the data path
 
- if (flage)
+ 	if (flage)
     {
-	stat(c,&sb) == 0 ? cout << "(True)" << endl : cout << "(False)" << endl;
+		if (stat(c,&sb) == 0)
+		 {
+				 cout << "(True)" << endl;
+		 }
+		 else
+		 {
+				setparenVal(false);
+				 cout << "(False)" << endl;
+		 }
 	}
     else if (flagf)
     {
-	(stat(c, &sb) == 0 && S_ISREG(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;   
-	//do the stuff for flad f
+		if (stat(c, &sb) == 0 && S_ISREG(sb.st_mode))
+		{
+				cout << "(True)" << endl;
+		}
+		else
+		 {
+				 setparenVal(false);
+				 cout << "(False)" << endl;
+		 }
+		//do the stuff for flad f
     	
     }
     else if(flagd)
     {
-	(stat(c, &sb) == 0 && S_ISDIR(sb.st_mode)) ? cout << "(True)" << endl : cout << "(False)" << endl;     
+		if (stat(c, &sb) == 0 && S_ISDIR(sb.st_mode)) 
+		{
+				cout << "(True)" << endl;
+		}
+		else 
+		{
+				setparenVal(false);
+				cout << "(False)" << endl;
+		}
 	//do the stuff for flag d
     	
     }
     else 
     {
+		setparenVal(false);
     	perror("flag not recognized"); //i dont think we need this
     }
 	
@@ -288,7 +326,10 @@ int Commands::connectP(string com, int andCheck, int orCheck) // for parsing con
 			//cout << "Test e " << locAnd << " " << locAnd << endl;
 			return 0;
 		}
-		return execforcommand(com);
+		bool temp =  execforcommand(com); //i changed this from return execforcommand(com), 
+		//it will still work right?
+		setparenVal(temp);
+		return temp;
 	}
 	return 0;	
 }
@@ -324,6 +365,7 @@ bool Commands::execforcommand(string& com)
 			}
 			else	
 			{
+				setparenVal(false);
 			    perror("error in getenv");
 			}
 			char * check = getcwd(path, 2047);
@@ -332,16 +374,19 @@ bool Commands::execforcommand(string& com)
 				int checkcheck = setenv("OLDPWD", path, 1);
 				if (checkcheck <= -1)	
 				{
+					setparenVal(false);
 					perror("error in setenv");
 				}
 			}
 			else 
 			{
+				setparenVal(false);
 				perror("Error in getcwd()");
 			}		
 			int tricheck = chdir(homebase.c_str());
 			if(tricheck <= -1)	
 			{
+				setparenVal(false);
 				perror("error in chdir");
 			}
 			return true;
@@ -356,6 +401,7 @@ bool Commands::execforcommand(string& com)
 			}
 			else
 			{
+				setparenVal(false);
 				perror("error in getenv");
 			}
 			char* check = getcwd(path, 2047);
@@ -364,16 +410,19 @@ bool Commands::execforcommand(string& com)
 				int checkcheck = setenv("OLDPWD", path, 1);
 				if (checkcheck <= -1)	
 				{
+					setparenVal(false);
 					perror("error in setenv");
 				}
 			}
 			else 
 			{
+				setparenVal(false);
 				perror("Error in getcwd()");
 			}		
 			int tricheck = chdir(cdir.c_str());
 			if (tricheck <= -1)	
 			{
+				setparenVal(false);
 				perror("error in chdir");
 			}
 			return true;
@@ -390,6 +439,7 @@ bool Commands::execforcommand(string& com)
 			}
 			else 
 			{
+				setparenVal(false);
 				perror("error in getenv");
 			}
 			char* check = getcwd(path, 2047);
@@ -398,16 +448,19 @@ bool Commands::execforcommand(string& com)
 				int checkcheck = setenv("OLDPWD", path, 1);
 				if (checkcheck <= -1)	
 				{
+					setparenVal(false);
 					perror("error in setenv");
 				}
 			}
 			else 
 			{
+				setparenVal(false);
 		        perror("Error in getcwd()");
 			}		
 			int tricheck = chdir(homebase.c_str());
 			if(tricheck <= -1)	
 			{
+				setparenVal(false);
 				perror("error in chdir");
 			}
 			return true;
@@ -419,16 +472,19 @@ bool Commands::execforcommand(string& com)
 			int checkcheck = setenv("OLDPWD", path, 1);
 			if (checkcheck <= -1) 
 			{
+				setparenVal(false);
 				perror("error in setenv");
 			}
 		}
 		else 
 		{
+			setparenVal(false);
 			perror("Error in getcwd()");
 		}
 		int tricheck = chdir(args); //problems with args
 		if (tricheck <= -1) 
 		{
+			setparenVal(false);
 			perror("error in chdir");
 		}
 		
@@ -437,6 +493,7 @@ bool Commands::execforcommand(string& com)
 	int pro = fork(); //time to fork
 	if (pro <= -1)	//-1 is error
 	{
+		setparenVal(false);
 		perror("ERROR IN CREATING FORK");
 		return false;
 	}
@@ -448,6 +505,7 @@ bool Commands::execforcommand(string& com)
 		int res = execvp(*arg, arg);
 		if (res <= -1)	
 		{
+			setparenVal(false);
 			perror("ERROR IN EXECUTING COMMAND LINE 202");
 			exit(1);
 		}
@@ -457,6 +515,7 @@ bool Commands::execforcommand(string& com)
 		int childWait = waitpid(pro, &childWait, 0);
 		if (childWait <= -1)
 		{
+			setparenVal(false);
 			perror("WAITING FOR CHILD FAILED");
 		}
 		if(childWait == 0)
