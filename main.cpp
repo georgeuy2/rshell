@@ -185,6 +185,7 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 	string orC= "|";
 	string semiC= ";";
 	int size =0;
+	bool foundboth = false;
 	size_t posBackP = comLine.find_last_of(")");
 	
 	//gets the size of the string
@@ -209,10 +210,11 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 		{
 			numParen--;
 			comLine.erase( comLine.find(")"), second.length());
+			foundboth = true;
 			cout << " ) detected " << comLine << " " << numParen << endl;
 		}
 		//when & is match and i+1 does not go out of bound
-		else if( tempCom[i] == '&')
+		else if( tempCom[i] == '&' && foundboth == true)
 		{
 				cout << "& detected" << endl;
 				removeChar(tempCom, i, comLine, andC); //This needs to remove the ( and update the tempCom
