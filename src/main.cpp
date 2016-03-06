@@ -143,7 +143,7 @@ void Commands::removeChar(char* tempCom, int x, string& comLine, string ch)
 void Commands::updateTempCom(char* tempCom, int x, int y, string comLine)
 {
 
-	for(int i = 0; i != comLine.length(); i++)
+	for(unsigned i = 0; i != comLine.length(); i++)
 	{
 	
 		if(tempCom[x+1] != '\0')
@@ -296,19 +296,19 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 
 void Commands::testP(string& com)
 {
-    int rmtest = com.find("test");
+    size_t rmtest = com.find("test");
     string t = "test";
     if (rmtest != string::npos)     //remove test
     {
    	 com.erase(rmtest, t.length());
     }
-    int rmbracket1 = com.find("[");
+    size_t rmbracket1 = com.find("[");
     string first = "[";
     if (rmbracket1 != string::npos)  //remove brackets
     {
         com.erase(rmbracket1, first.length());
 
-	int rmbracket2 = com.find("]");
+	size_t rmbracket2 = com.find("]");
         string second = "]";
         if (rmbracket2 != string::npos)
         {
@@ -326,11 +326,11 @@ void Commands::testP(string& com)
 }
 void Commands::starttest(string& com)
 {
-    int finde = com.find("-e");
+    size_t finde = com.find("-e");
     string e = "-e";
-    int findf = com.find("-f");
+    size_t findf = com.find("-f");
     string f = "-f";
-    int findd = com.find("-d");
+    size_t findd = com.find("-d");
     string d = "-d";
     bool flage = false;
     bool flagf = false;
