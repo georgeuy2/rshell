@@ -1,7 +1,7 @@
 COMPILE = g++ 
 FLAGS = -W -Werror -pedantic -ansi
 
-all: rshel
+all: rshell
 
 rshell:
 	mkdir -p bin
