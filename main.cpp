@@ -80,7 +80,7 @@ void Commands::parse(string commLine)
 		if (foundParen == string::npos)
 		{
 				numberOfParentheses++;
-				cout << "number of (): " << numberOfParentheses << endl;
+		//		cout << "number of (): " << numberOfParentheses << endl;
 				commandP(commLine);
 				setparenVal(true); //need to reset all these for the next round
 		}
@@ -133,24 +133,13 @@ void Commands::commandP(string& com)
 //
 void Commands::removeChar(char* tempCom, int x, string& comLine, string ch)
 {
-	comLine.erase(x,ch.size());	//since tempCom updates then it can remove ( properly
-//	cout<< x << "comeLine:" << comLine << endl;	
-		
-	for(x; tempCom[x] != '\0'; x++)
-	{
-		if(tempCom[x+1] != '\0')
-		{
-			tempCom[x] = tempCom[x+1];
-		}
-		else if(tempCom[x+1] == '\0')
-		{
-			tempCom[x] = '\0';
-		}
-	}	
 
-//	print(tempCom);		//just to print the result
+		comLine.erase(comLine.find(ch),ch.size());	
+//cout << "ecomline: " << comLine << endl;
+		tempCom = new char[comLine.length() + 1];
+		strcpy(tempCom, comLine.c_str());
+}	
 
-}
 void Commands::updateTempCom(char* tempCom, int x, int y, string comLine)
 {
 
@@ -194,7 +183,7 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 	{
 		size++;
 	}    
-	cout << "position of  ) is element: " << posBackP << endl;
+//	cout << "position of  ) is element: " << posBackP << endl;
 
 	for(int i = 0; tempCom[i] != '\0' ; i++ )
     {
@@ -204,7 +193,7 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
             // when first element is ( command or argument)
 			removeChar(tempCom, i, comLine, first); //This needs to remove the ( and update the tempCom
 			numParen++;
-			cout << " ( detected " << comLine << " " << numParen << endl; 
+		//	cout << " ( detected " << comLine << " " << numParen << endl; 
 		}
 
 		else if (tempCom[i] == ')')
@@ -212,51 +201,63 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 			numParen--;
 			comLine.erase( comLine.find(")"), second.length());
 			foundboth = true;
-			cout << " ) detected " << comLine << " " << numParen << endl;
+		//	cout << " ) detected " << comLine << " " << numParen << endl;
 		}
 		//when & is match and i+1 does not go out of bound
-		else if( tempCom[i] == '&' && foundboth == true)
+		else if( (tempCom[i] == '&' || tempCom[i] == ';' ) && foundboth == true)
 		{
-				cout << "& detected" << endl;
-				removeChar(tempCom, i, comLine, andC); //This needs to remove the ( and update the tempCom
-				if(tempCom[i] == '&')
-				{
-			//		i--;
-					cout << "&& detected" << endl;
-					removeChar(tempCom, i, comLine, andC);	
-					line = comLine.substr(0, i);
-					cout << "line:" << line << endl;
-				
-					cout << "b4 comLine: " << comLine << endl;
-					comLine.erase(0,line.size()+1);
-					
-					cout<< "comeLINE:" << comLine << " " << comLine.length() << endl;
+		//		cout << "& detected" << endl;
+				if(tempCom[i] == ';'){
+					removeChar(tempCom,i, comLine, semiC);
+					line = comLine.substr(0,i);
+					comLine.erase(0,line.size());
 					updateTempCom(tempCom,i,0,comLine);
 					commandP(line);
-					cout << "comline: " << comLine << endl;
+
 				}
 				else
 				{
-					setparenVal(false);
-					cout << " error " << endl;
+					removeChar(tempCom, i, comLine, andC); //This needs to remove the ( and update the tempCom
+					if(tempCom[i] == '&')
+					{
+			//		i--;
+		//			cout << "&& detected" << endl;
+						removeChar(tempCom, i, comLine, andC);	
+						line = comLine.substr(0, i);
+		//			cout << "line:" << line << endl;
+				
+		//			cout << "b4 comLine: " << comLine << endl;
+						comLine.erase(0,line.size());
+					
+		//			cout<< "comeLINE:" << comLine << " " << comLine.length() << endl;
+						updateTempCom(tempCom,i,0,comLine);
+						commandP(line);
+		//				cout << "comline: " << comLine << endl;
+					}
+					else
+					{
+						setparenVal(false);
+						perror("Invalid Command");
+						break;
+					}
 				}
 		}
-		else if ( tempCom[i] == '|' || foundboth == true) 
+		else if ( tempCom[i] == '|' && foundboth == true) 
 		{
-				cout << "| detected" << endl;
+		//		cout << "| detected" << endl;
 				removeChar(tempCom, i, comLine, orC); //this removes ( and updates the tempCon
-				cout << getparenVal() << endl;
+		//		cout << getparenVal() << endl;
 				if (tempCom[i] == '|')
 				{
-						cout << "|| dectected" << endl;
+	//					cout << "|| dectected" << endl;
 						removeChar(tempCom, i, comLine, orC);
 						line = comLine.substr(0, i);
-						cout << "line: " << line << endl;
+//						cout << "line: " << line << endl;
 
-						cout << "b4 comLine: " << comLine << endl;
-						comLine.erase(0, line.size() + 1);
+//						cout << "b4 comLine: " << comLine << endl;
+						comLine.erase(0, line.size());
 
-						cout << "comLine: " << comLine << " " << comLine.length() << endl;
+					//	cout << "comLine: " << comLine << " " << comLine.length() << endl;
 						//commandP(line);
 						//updateTempCom(tempCom, i, 0, comLine);
 						if (getparenVal()== 0 && firstTimeExOr == false )
@@ -276,13 +277,17 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 				else 
 				{
 						setparenVal(false);
-						cout << "error" << endl;
+						perror("Invalid Command!");
+						break;
 				}
 		}
-
+		else if(comLine.find(")") == string::npos){
+			perror("Error: missing )");
+			break;
+		}
 		if( numParen == 0 && firstTimeExOr == false )
 		{	
-			cout << "no more ()" << endl;
+		//	cout << "no more ()" << endl;
 			commandP(comLine);
 			break;	
 		}
