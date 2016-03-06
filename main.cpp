@@ -187,7 +187,7 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 	int size =0;
 	bool foundboth = false;
 	size_t posBackP = comLine.find_last_of(")");
-	
+	setparenVal(false);	
 	//gets the size of the string
 	for(int j =0; tempCom[j] != '\0'; j++)
 	{
@@ -256,8 +256,9 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 						comLine.erase(0, line.size() + 1);
 
 						cout << "comLine: " << comLine << " " << comLine.length() << endl;
+						commandP(line);
 						updateTempCom(tempCom, i, 0, comLine);
-						if (getparenVal() == false)
+						if (getparenVal() == 0)
 						{
 								commandP(line);
 								cout << "comLine: " << comLine << endl;
