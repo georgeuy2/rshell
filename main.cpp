@@ -256,12 +256,12 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 						comLine.erase(0, line.size() + 1);
 
 						cout << "comLine: " << comLine << " " << comLine.length() << endl;
-						commandP(line);
-						updateTempCom(tempCom, i, 0, comLine);
+						//commandP(line);
+						//updateTempCom(tempCom, i, 0, comLine);
 						if (getparenVal() == 0)
 						{
 								commandP(line);
-								cout << "comLine: " << comLine << endl;
+								//cout << "comLine: " << comLine << endl;
 						}
 				}
 				else 
@@ -271,7 +271,7 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 				}
 		}
 
-		if( numParen == 0)
+		if( numParen == 0 && getparenVal() == 0)
 		{	
 			cout << "no more ()" << endl;
 			commandP(comLine);
@@ -359,6 +359,7 @@ void Commands::starttest(string& com)
     {
 		if (stat(c,&sb) == 0)
 		 {
+				 setparenVal(true);
 				 cout << "(True)" << endl;
 		 }
 		 else
@@ -371,6 +372,7 @@ void Commands::starttest(string& com)
     {
 		if (stat(c, &sb) == 0 && S_ISREG(sb.st_mode))
 		{
+				setparenVal(true);
 				cout << "(True)" << endl;
 		}
 		else
@@ -385,6 +387,7 @@ void Commands::starttest(string& com)
     {
 		if (stat(c, &sb) == 0 && S_ISDIR(sb.st_mode)) 
 		{
+				setparenVal(true);
 				cout << "(True)" << endl;
 		}
 		else 
@@ -540,6 +543,7 @@ bool Commands::execforcommand(string& com)
 				setparenVal(false);
 				perror("error in chdir");
 			}
+			setparenVal(true);
 			return true;
 		}
 		else if (strcmp(args, "-") == 0) //checking args
@@ -576,6 +580,7 @@ bool Commands::execforcommand(string& com)
 				setparenVal(false);
 				perror("error in chdir");
 			}
+			setparenVal(true);
 			return true;
 		
 		}
@@ -614,6 +619,7 @@ bool Commands::execforcommand(string& com)
 				setparenVal(false);
 				perror("error in chdir");
 			}
+			setparenVal(true);
 			return true;
 	
 		}
@@ -638,7 +644,7 @@ bool Commands::execforcommand(string& com)
 			setparenVal(false);
 			perror("error in chdir");
 		}
-		
+		setparenVal(true);
 		return true;
 	}
 	int pro = fork(); //time to fork
@@ -671,6 +677,7 @@ bool Commands::execforcommand(string& com)
 		}
 		if(childWait == 0)
 		{
+			setparenVal(true);
 			return true;
 		}
 	}
