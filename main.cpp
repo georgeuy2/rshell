@@ -192,56 +192,58 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 	{
 		size++;
 	}    
-//cout << "position of  ) is element: " << posBackP << endl;
+	cout << "position of  ) is element: " << posBackP << endl;
 
 	for(int i = 0; tempCom[i] != '\0' ; i++ )
-            {
-        	//when ( is matched
-	       if(tempCom[i] == '(')
-                {
-                 	// when first element is ( command or argument)
+    {
+        //when ( is matched
+	    if(tempCom[i] == '(')
+        {
+            // when first element is ( command or argument)
 			removeChar(tempCom, i, comLine, first); //This needs to remove the ( and update the tempCom
-			numParen++; 
+			numParen++;
+			cout << " ( detected " << comLine << " " << numParen << endl; 
 		}
 
 		else if (tempCom[i] == ')')
 		{
 			numParen--;
 			comLine.erase( comLine.find(")"), second.length());
-		//	cout << " ) detected " << comLine << " " << numParen << endl;
+			cout << " ) detected " << comLine << " " << numParen << endl;
 		}
 		//when & is match and i+1 does not go out of bound
 		else if( tempCom[i] == '&')
-			{
-				//cout << "& detected" << endl;
+		{
+				cout << "& detected" << endl;
 				removeChar(tempCom, i, comLine, andC); //This needs to remove the ( and update the tempCom
 				if(tempCom[i] == '&')
 				{
 			//		i--;
-		//			cout << "&& detected" << endl;
+					cout << "&& detected" << endl;
 					removeChar(tempCom, i, comLine, andC);	
 					line = comLine.substr(0, i);
-		//			cout << "line:" << line << endl;
+					cout << "line:" << line << endl;
 				
-		//			cout << "b4 comLine: " << comLine << endl;
+					cout << "b4 comLine: " << comLine << endl;
 					comLine.erase(0,line.size()+1);
 					
-		//			cout<< "comeLINE:" << comLine << " " << comLine.length() << endl;
+					cout<< "comeLINE:" << comLine << " " << comLine.length() << endl;
 					updateTempCom(tempCom,i,0,comLine);
 					commandP(line);
-		//			cout << "comline: " << comLine << endl;
+					cout << "comline: " << comLine << endl;
 				}
 				else
 				{
 					cout << " error " << endl;
 				}
-			}
+		}
 		if( numParen == 0)
 		{	
-		//	cout << "no more ()" << endl;
-			commandP(comLine);	
+			cout << "no more ()" << endl;
+			commandP(comLine);
+			break;	
 		}
-                   }
+    }
 }
 
 void Commands::testP(string& com)
