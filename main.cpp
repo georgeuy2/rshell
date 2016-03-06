@@ -203,6 +203,13 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 			removeChar(tempCom, i, comLine, first); //This needs to remove the ( and update the tempCom
 			numParen++; 
 		}
+
+		else if (tempCom[i] == ')')
+		{
+			numParen--;
+			comLine.erase( comLine.find(")"), second.length());
+		//	cout << " ) detected " << comLine << " " << numParen << endl;
+		}
 		//when & is match and i+1 does not go out of bound
 		else if( tempCom[i] == '&')
 			{
@@ -210,26 +217,30 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 				removeChar(tempCom, i, comLine, andC); //This needs to remove the ( and update the tempCom
 				if(tempCom[i] == '&')
 				{
-					i--;
-			//		cout << "&& detected" << endl;
+			//		i--;
+		//			cout << "&& detected" << endl;
 					removeChar(tempCom, i, comLine, andC);	
 					line = comLine.substr(0, i);
-			//		cout << "line:" << line << endl;
+		//			cout << "line:" << line << endl;
 				
-			//		cout << "b4 comLine: " << comLine << endl;
+		//			cout << "b4 comLine: " << comLine << endl;
 					comLine.erase(0,line.size()+1);
 					
-			//		cout<< "comeLINE:" << comLine << " " << comLine.length();
+		//			cout<< "comeLINE:" << comLine << " " << comLine.length() << endl;
 					updateTempCom(tempCom,i,0,comLine);
 					commandP(line);
-
+		//			cout << "comline: " << comLine << endl;
 				}
 				else
 				{
 					cout << " error " << endl;
 				}
 			}
-			
+		if( numParen == 0)
+		{	
+		//	cout << "no more ()" << endl;
+			commandP(comLine);	
+		}
                    }
 }
 
