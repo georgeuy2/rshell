@@ -7,7 +7,7 @@ To install this project:
 ```
 $ git clone https://github.com/georgeuy2/rshell.git
 $ cd rshell
-$ git checkout hw1
+$ git checkout hw2
 $ make
 $ bin/rshell
 ```
@@ -17,3 +17,7 @@ $ bin/rshell
 * The command "wait" produces an error.
 * Using cd with a comment produces an error but not the same error as a standard shell.
 * The || connector does not work with invalid commands (i.e. "moose || echo failed" will only produce an error for invalid command "moose" and not execute command after "||").
+* Missing end parentheses will produce an error because we were not sure what bash is doing when handling it.
+* Nested parentheses in some instances do not execute properly.
+* End parentheses without beginning parentheses does not produce the proper error (or in the case of "echo a )", it outputs "a )".
+ 
