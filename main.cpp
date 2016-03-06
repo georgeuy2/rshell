@@ -239,6 +239,34 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 					cout << " error " << endl;
 				}
 		}
+		else if ( tempCom[i] == '|' && foundboth == true) 
+		{
+				cout << "| detected" << endl;
+				removeChar(tempCom, i, comLine, orC); //this removes ( and updates the tempCon
+				if (tempCom[i] == '|')
+				{
+						cout << "|| dectected" << endl;
+						removeChar(tempCom, i, comLine, orC);
+						line = comLine.substr(0, i);
+						cout << "line: " << line << endl;
+
+						cout << "b4 comLine: " << comLine << endl;
+						comLine.erase(0, line.size() + 1);
+
+						cout << "comLine: " << comLine << " " << comLine.length() << endl;
+						updateTempCom(tempCom, i, 0, comLine);
+						if (getparenVal() == false)
+						{
+								commandP(line);
+								cout << "comLine: " << comLine << endl;
+						}
+				}
+				else 
+				{
+						cout << "error" << endl;
+				}
+		}
+
 		if( numParen == 0)
 		{	
 			cout << "no more ()" << endl;
