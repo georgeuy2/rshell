@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
@@ -56,24 +57,15 @@ class Commands{
 	  void starttest(string& com);
 	  void testP(string& com);  //for parsing test
 	  void operatorP(char* tempCom, int& numParen, string& comLine, vector<string> list);
-	  int getNumbPare();
-	  void increNumbPare();
-	  void decreNumbPare();
-	private:
-	  int numbFirstP;
+	  void removeChar(char* tempCom, int x, string& comLine, string ch);
+	  void print(char* x);
+	  void updateTempCom(char* tempCom, int x, int y, string comLine);
 };
 
-int Commands::getNumbPare(){
-	return numbFirstP;
-}
-void Commands::increNumbPare(){
-	numbFirstP++;
-}
-void Commands::decreNumbPare(){
-	numbFirstP--;
-}
+
 void Commands::parse(string commLine)
 {
+		int numberOfParentheses = 0;
 		vector <string> list;
 		int posFirstP = 0;
 		int posSecP = 0;
@@ -87,8 +79,8 @@ void Commands::parse(string commLine)
 		strcpy(tempCon, commLine.c_str());
 		if (foundParen == string::npos)
 		{
-				increNumbPare();
-				cout << "number of (): " << getNumbPare() << endl;
+				numberOfParentheses++;
+				cout << "number of (): " << numberOfParentheses << endl;
 				commandP(commLine);
 				setparenVal(true); //need to reset all these for the next round
 		}
@@ -139,67 +131,106 @@ void Commands::commandP(string& com)
 
 //BEGIN NEW STUFF
 //
+void Commands::removeChar(char* tempCom, int x, string& comLine, string ch)
+{
+	comLine.erase(x,ch.size());	//since tempCom updates then it can remove ( properly
+//	cout<< x << "comeLine:" << comLine << endl;	
+		
+	for(x; tempCom[x] != '\0'; x++)
+	{
+		if(tempCom[x+1] != '\0')
+		{
+			tempCom[x] = tempCom[x+1];
+		}
+		else if(tempCom[x+1] == '\0')
+		{
+			tempCom[x] = '\0';
+		}
+	}	
 
-void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<string> list){
-	   string line;
-//     cout << "() detected" << endl;       
-        int size =0;
-	for(int j =0; tempCom[j] != '\0'; j++){
-	size++;
-}    
+//	print(tempCom);		//just to print the result
+
+}
+void Commands::updateTempCom(char* tempCom, int x, int y, string comLine)
+{
+
+	for(int i = 0; i != comLine.length(); i++)
+	{
+	
+		if(tempCom[x+1] != '\0')
+		{
+			tempCom[y] = tempCom[x+1];
+			y++;
+		}
+		x++;
+	}
+	tempCom[y] = '\0';	
+}
+
+void Commands::print(char* x)
+{
+	cout << "array:";
+	for(int i=0; x[i] !='\0'; i++)
+	{
+		cout << x[i];
+	}
+	cout << endl;
+}
+void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<string> list)
+{
+	string line;
+	string first = "(";
+	string second = ")";
+        string andC = "&";
+	string orC= "|";
+	string semiC= ";";
+	int size =0;
+	size_t posBackP = comLine.find_last_of(")");
+	
+	//gets the size of the string
+	for(int j =0; tempCom[j] != '\0'; j++)
+	{
+		size++;
+	}    
+//cout << "position of  ) is element: " << posBackP << endl;
+
 	for(int i = 0; tempCom[i] != '\0' ; i++ )
             {
-				//cout<< "enter loop" << endl; 
-               if(tempCom[i] == '(')
+        	//when ( is matched
+	       if(tempCom[i] == '(')
                 {
-               //    			cout << "word: " << tempCom[i] << "number of Paeren: " << getNumbPare() << " " << i << endl;
-               numParen++; 
-		
-			if(numParen > 1 && i>=1){
-				line = comLine.substr(numParen-1, i-2);
-				comLine.erase(numParen, i);
-				cout << "line: " << line << endl;
-				cout << "comline: " << comLine << endl;
-				commandP(line);
-	//		cout << " made it " << endl;	
-			}
-			//comLine.erase(i,0);
-	//		cout << "comline2: " << comLine << endl;
-			//increNumbPare();
-			if( i +1 < size){
-
-			if(tempCom[i] =='|' && tempCom[i+1])
-			{
-				
-			}
-}
+                 	// when first element is ( command or argument)
+			removeChar(tempCom, i, comLine, first); //This needs to remove the ( and update the tempCom
+			numParen++; 
 		}
+		//when & is match and i+1 does not go out of bound
+		else if( tempCom[i] == '&')
+			{
+				//cout << "& detected" << endl;
+				removeChar(tempCom, i, comLine, andC); //This needs to remove the ( and update the tempCom
+				if(tempCom[i] == '&')
+				{
+					i--;
+			//		cout << "&& detected" << endl;
+					removeChar(tempCom, i, comLine, andC);	
+					line = comLine.substr(0, i);
+			//		cout << "line:" << line << endl;
+				
+			//		cout << "b4 comLine: " << comLine << endl;
+					comLine.erase(0,line.size()+1);
+					
+			//		cout<< "comeLINE:" << comLine << " " << comLine.length();
+					updateTempCom(tempCom,i,0,comLine);
+					commandP(line);
 
-                else if (tempCom[i] == ')' && i >=1 )
-                {
-           numParen--;
-         
-	   //cout << "num: " << numParen << " i: " << i << endl;
-                    line = comLine.substr(numParen, i );
-		cout << "comline: " << comLine <<endl;
-                  					cout << "word: " << line << "number of Paeren: " << numParen << endl;
-       
-            		commandP(line); 
-	                //list.push_back(line);
-					//I'm adding this in
-					comLine.erase(numParen, i+ 1);
-					//cout << comLine << endl;
-		
-                }
-         		//cout << "word: " << line << "number of Paeren: " << numParen << " " << i <<endl;
-       
-            }
- 
-               // for(int j = 0; j != list.size(); j++)
-             //   {
-//                cout << "end of operator " <<  endl;
-               //}
- 
+				}
+				else
+				{
+					cout << " error " << endl;
+				}
+			}
+			
+                   }
 }
 
 void Commands::testP(string& com)
@@ -208,19 +239,13 @@ void Commands::testP(string& com)
     string t = "test";
     if (rmtest != string::npos)     //remove test
     {
-//	 cout<< "WORD: " << com << endl;
-//	 cout << "Test works" << endl;    
    	 com.erase(rmtest, t.length());
-  //  cout<< "WORD: " << com << endl;
     }
     int rmbracket1 = com.find("[");
     string first = "[";
     if (rmbracket1 != string::npos)  //remove brackets
     {
-//	cout <<"CHECKING BRACKETS: " << com << endl;
-//	cout << "test with [  " << endl;
         com.erase(rmbracket1, first.length());
-//	cout <<"CHECKING BRACKETS: " << com << endl;
 
 	int rmbracket2 = com.find("]");
         string second = "]";
@@ -233,7 +258,6 @@ void Commands::testP(string& com)
 			setparenVal(false);
             perror("Error: command not found."); //missing second bracket
         }
-//	cout <<"CHECKING second BRACKETS: " << com << endl;
 
     }
     starttest(com);
