@@ -236,13 +236,15 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 				}
 				else
 				{
+					setparenVal(false);
 					cout << " error " << endl;
 				}
 		}
-		else if ( tempCom[i] == '|' && foundboth == true) 
+		else if ( tempCom[i] == '|' || foundboth == true) 
 		{
 				cout << "| detected" << endl;
 				removeChar(tempCom, i, comLine, orC); //this removes ( and updates the tempCon
+				cout << getparenVal() << endl;
 				if (tempCom[i] == '|')
 				{
 						cout << "|| dectected" << endl;
@@ -263,6 +265,7 @@ void Commands::operatorP(char* tempCom, int& numParen, string& comLine, vector<s
 				}
 				else 
 				{
+						setparenVal(false);
 						cout << "error" << endl;
 				}
 		}
